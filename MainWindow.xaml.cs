@@ -19,9 +19,14 @@ namespace BiblioRap
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		public int Width = 1000;
+		public int Height = 800;
+
 		public MainWindow()
 		{
 			InitializeComponent();
+
+			DataContext = this;
 		}
 	}
 }
