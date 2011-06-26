@@ -37,5 +37,32 @@ namespace BiblioRap
 			else
 				source.BorderThickness = new Thickness(0);
 		}
+
+		private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (e.AddedItems.Count > 0)
+				MessageBox.Show("You just selected " + e.AddedItems[0]);
+		}
+
+		private void Button_Click(object sender, RoutedEventArgs e)
+		{
+			MessageBox.Show("You just clicked " + e.Source);
+		}
+
+		private void HelpCanExecute(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = true;
+		}
+
+		private void HelpHasExecuted(object sender, ExecutedRoutedEventArgs e)
+		{
+			MessageBox.Show(this,
+				"Did you really think anyone can help you ? "
+				+ "Hah hah hah hah... you are on your own on this, kiddo'. "
+				+ "Best wishes, Red. a.k.a your worst nightmare...",
+				"Useless Info",
+				MessageBoxButton.OK,
+				MessageBoxImage.Information);
+		}
 	}
 }

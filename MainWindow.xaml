@@ -3,12 +3,38 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="BiblioRap" Width="1000" Height="800"
         Background="DarkOliveGreen">
-    <Grid>
-        <Button HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="AboutButton" Click="AboutButton_Click">
-            <Button.LayoutTransform>
-                <ScaleTransform CenterX="0.5" CenterY="0.5" ScaleX="10" ScaleY="10"/>
-            </Button.LayoutTransform>
-                About BiblioRap
-        </Button>
-    </Grid>
+    <Window.CommandBindings>
+        <CommandBinding Command="Help"
+                        CanExecute="HelpCanExecute" Executed="HelpHasExecuted"/>
+        <CommandBinding Command="Close"
+                        CanExecute="CloseCanExecute" Executed="CloseHasExecuted"/>
+    </Window.CommandBindings>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top" Background="Chocolate">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Exit" Background="Chocolate" Command="Close"/>
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Command="Help" Header="{Binding Path=Command.Text, RelativeSource={RelativeSource Self}}" Background="Chocolate"/>
+                <MenuItem Header="_About" Click="AboutButton_Click" Background="Chocolate"/>
+            </MenuItem>
+            <Separator/>
+            <MenuItem Header="This shouldn't be here. Please, make it go away!" x:Name="peskyLittleThing">
+                <MenuItem.ToolTip>
+                    <ToolTip>
+                        Hint: If you click on it's sub-menu item 7 times, it will go away.
+                    </ToolTip>
+                </MenuItem.ToolTip>
+                <MenuItem x:Name="peskyMenuItem" Click="peskyMenuItem_Click"/>
+            </MenuItem>
+        </Menu>
+        <Grid>
+            <Button HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="AboutButton" Click="AboutButton_Click">
+                <Button.LayoutTransform>
+                    <ScaleTransform CenterX="0.5" CenterY="0.5" ScaleX="10" ScaleY="10"/>
+                </Button.LayoutTransform>
+                    About BiblioRap
+            </Button>
+        </Grid>
+    </DockPanel>
 </Window>
