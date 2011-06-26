@@ -10,13 +10,31 @@
                         CanExecute="CloseCanExecute" Executed="CloseHasExecuted"/>
     </Window.CommandBindings>
     <DockPanel>
-        <Menu DockPanel.Dock="Top" Background="Chocolate">
+        <Menu DockPanel.Dock="Top">
+        	<Menu.Background>
+        		<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+        			<LinearGradientBrush.RelativeTransform>
+        				<TransformGroup>
+        					<ScaleTransform CenterY="0.5" CenterX="0.5" ScaleY="1.247" ScaleX="1"/>
+        					<SkewTransform AngleY="-0.611" AngleX="0" CenterY="0.5" CenterX="0.5"/>
+        					<RotateTransform Angle="90.204" CenterY="0.5" CenterX="0.5"/>
+        					<TranslateTransform X="0.128"/>
+        				</TransformGroup>
+        			</LinearGradientBrush.RelativeTransform>
+        			<GradientStop Color="#FFF3F3F3" Offset="0.122"/>
+        			<GradientStop Color="White" Offset="1"/>
+        			<GradientStop Color="#FF33EFC0" Offset="0.343"/>
+        			<GradientStop Color="#FF1CDAAA" Offset="0.417"/>
+        			<GradientStop Color="#FF54E5C0" Offset="0.674"/>
+        			<GradientStop Color="White" Offset="0.348"/>
+        		</LinearGradientBrush>
+        	</Menu.Background>
             <MenuItem Header="_File">
-                <MenuItem Header="_Exit" Background="Chocolate" Command="Close"/>
+                <MenuItem Header="_Exit" Command="Close"/>
             </MenuItem>
             <MenuItem Header="_Help">
-                <MenuItem Command="Help" Header="{Binding Path=Command.Text, RelativeSource={RelativeSource Self}}" Background="Chocolate"/>
-                <MenuItem Header="_About" Click="AboutButton_Click" Background="Chocolate"/>
+                <MenuItem Command="Help" Header="{Binding Path=Command.Text, RelativeSource={RelativeSource Self}}"/>
+                <MenuItem Header="_About" Click="AboutButton_Click"/>
             </MenuItem>
             <Separator/>
             <MenuItem Header="This shouldn't be here. Please, make it go away!" x:Name="peskyLittleThing">
@@ -29,7 +47,25 @@
             </MenuItem>
         </Menu>
         <Grid>
-            <Button HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="AboutButton" Click="AboutButton_Click">
+        	<Grid.Background>
+        		<LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+        			<LinearGradientBrush.RelativeTransform>
+        				<TransformGroup>
+        					<ScaleTransform CenterY="0.5" CenterX="0.5" ScaleY="3.123" ScaleX="1"/>
+        					<SkewTransform AngleY="-1.271" AngleX="0" CenterY="0.5" CenterX="0.5"/>
+        					<RotateTransform Angle="77.611" CenterY="0.5" CenterX="0.5"/>
+        					<TranslateTransform X="0.345" Y="-0.279"/>
+        				</TransformGroup>
+        			</LinearGradientBrush.RelativeTransform>
+        			<GradientStop Color="White" Offset="1"/>
+        			<GradientStop Color="#FF81CEFF" Offset="0.5"/>
+        			<GradientStop Color="#FF2CADFF" Offset="0.51"/>
+        			<GradientStop Color="White" Offset="0.426"/>
+        			<GradientStop Color="#FF25E4CE" Offset="0.643"/>
+        			<GradientStop Color="#FF31D9E5" Offset="0.496"/>
+        		</LinearGradientBrush>
+        	</Grid.Background>
+            <Button HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="AboutButton" Click="AboutButton_Click" Visibility="Visible">
                 <Button.LayoutTransform>
                     <ScaleTransform CenterX="0.5" CenterY="0.5" ScaleX="10" ScaleY="10"/>
                 </Button.LayoutTransform>
