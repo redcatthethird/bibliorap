@@ -19,6 +19,8 @@ namespace BiblioRap
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		public static int PeskyMenuItemClickCount = 0;
+
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -28,6 +30,39 @@ namespace BiblioRap
 		{
 			Window aboutDialog = new AboutDialog();
 			aboutDialog.ShowDialog();
+		}
+
+		private void HelpCanExecute(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = true;
+		}
+
+		private void HelpHasExecuted(object sender, ExecutedRoutedEventArgs e)
+		{
+			MessageBox.Show(this,
+				"Did you really think anyone can help you ? "
+				+ "Hah hah hah hah... you are on your own on this, kiddo'. "
+				+ "Best wishes, Red. a.k.a your worst nightmare...",
+				"Useless Info",
+				MessageBoxButton.OK,
+				MessageBoxImage.Information);
+		}
+
+		private void CloseCanExecute(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = true;
+		}
+
+		private void CloseHasExecuted(object sender, ExecutedRoutedEventArgs e)
+		{
+			this.Close();
+		}
+
+		private void peskyMenuItem_Click(object sender, RoutedEventArgs e)
+		{
+			PeskyMenuItemClickCount++;
+			if (PeskyMenuItemClickCount >= 7)
+				peskyLittleThing.Visibility = Visibility.Collapsed;
 		}
 	}
 }
