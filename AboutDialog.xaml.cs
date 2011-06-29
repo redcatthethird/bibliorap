@@ -64,5 +64,15 @@ namespace BiblioRap
 				MessageBoxButton.OK,
 				MessageBoxImage.Information);
 		}
+
+		private void CloseCanExecute(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = true;
+		}
+
+		private void CloseHasExecuted(object sender, ExecutedRoutedEventArgs e)
+		{
+			this.DialogResult = true;
+		}
 	}
 }

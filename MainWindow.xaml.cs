@@ -55,7 +55,9 @@ namespace BiblioRap
 
 		private void CloseHasExecuted(object sender, ExecutedRoutedEventArgs e)
 		{
-			this.Close();
+			if (MessageBox.Show(this, "Do you really want to close \"" + this.Title + "\" ?",
+					"Annoying prompt", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+				this.Close();
 		}
 
 		private void peskyMenuItem_Click(object sender, RoutedEventArgs e)
