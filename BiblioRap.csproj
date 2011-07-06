@@ -101,7 +101,6 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Resource Include="Images\Metal-OnBrushStamp.png" />
     <Resource Include="Images\Metal-OnCrop.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

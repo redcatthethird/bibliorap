@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.IO;
 
 namespace BiblioRap
 {
@@ -65,6 +66,30 @@ namespace BiblioRap
 			PeskyMenuItemClickCount++;
 			if (PeskyMenuItemClickCount >= 7)
 				peskyLittleThing.Visibility = Visibility.Collapsed;
+		}
+
+        private void ScanButton_Click(object sender, RoutedEventArgs e)
+        {
+			string scanPath = scanDirectory.Text;
+			if (!Directory.Exists(scanPath))
+			{
+				MessageBox.Show(this, "The directory doesn't exist! Please check if it is typed correctly",
+					"Directory missing", MessageBoxButton.OK, MessageBoxImage.Exclamation, MessageBoxResult.OK);
+				return;
+			}		
+		
+			// TO DO: Generalize to include recursive search.
+			string[] files = Directory.GetFiles(scanPath);
+
+			foreach (string file in files)
+			{
+				mediaFileList.Items.Add(file);
+			}
+        }
+
+		private void SaveButton_Click(object sender, RoutedEventArgs e)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }
