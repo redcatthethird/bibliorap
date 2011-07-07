@@ -20,17 +20,13 @@ namespace BiblioRap
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		public static string[] ScannableExtensions = ("avi" + ',' + "mp3" + ',' + "jpg,jpeg,png,gif,bmp,tiff").Split(',');
+
 		public static int PeskyMenuItemClickCount = 0;
 
 		public MainWindow()
 		{
 			InitializeComponent();
-		}
-
-		private void AboutButton_Click(object sender, RoutedEventArgs e)
-		{
-			Window aboutDialog = new AboutDialog();
-			aboutDialog.ShowDialog();
 		}
 
 		private void HelpCanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -64,32 +60,115 @@ namespace BiblioRap
 		private void peskyMenuItem_Click(object sender, RoutedEventArgs e)
 		{
 			PeskyMenuItemClickCount++;
-			if (PeskyMenuItemClickCount >= 7)
+			if (PeskyMenuItemClickCount >= 5)
 				peskyLittleThing.Visibility = Visibility.Collapsed;
 		}
 
         private void ScanButton_Click(object sender, RoutedEventArgs e)
         {
-			string scanPath = scanDirectory.Text;
-			if (!Directory.Exists(scanPath))
+			DirectoryInfo scanPath = new DirectoryInfo(ScanDirectory.Text);
+			if (!scanPath.Exists)
 			{
-				MessageBox.Show(this, "The directory doesn't exist! Please check if it is typed correctly",
-					"Directory missing", MessageBoxButton.OK, MessageBoxImage.Exclamation, MessageBoxResult.OK);
+				MessageBox.Show(this, "The directory doesn't exist ! Please check if it is typed correctly,",
+					"Directory missing !", MessageBoxButton.OK, MessageBoxImage.Exclamation, MessageBoxResult.OK);
 				return;
-			}		
-		
-			// TO DO: Generalize to include recursive search.
-			string[] files = Directory.GetFiles(scanPath);
+			}
 
-			foreach (string file in files)
+			List<FileInfo> files = scanPath.GetFilesSelectively(isRecursiveScan.IsChecked ?? true, ScanDirectory, ScannableExtensions);
+
+			mediaFileList.Items.Clear();
+			foreach (FileInfo file in files)
 			{
-				mediaFileList.Items.Add(file);
+				mediaFileList.Items.Add(file.Name);
 			}
         }
 
 		private void SaveButton_Click(object sender, RoutedEventArgs e)
 		{
 			throw new NotImplementedException();
+		}
+
+		private void ShowAboutDialog(object sender, RoutedEventArgs e)
+		{
+			(new AboutDialog()).ShowDialog();
+		}
+
+		private void BrowseButton_Click(object sender, RoutedEventArgs e)
+		{
+			throw new NotImplementedException();
+		}
+	}
+
+	public static class ExtensionMethods
+	{
+
+		public static List<FileInfo> GetFilesSelectively(this DirectoryInfo path, bool scanRecursively, TextBox statusDisplayer = null, params string[] extensions)
+		{
+			List<FileInfo> files = new List<FileInfo>();
+
+			foreach (FileInfo file in path.GetFiles())
+			{
+				if (statusDisplayer != null)
+					statusDisplayer.Text = file.FullName;
+
+				if (extensions.Contains(file.Extension.Replace(".", "")))
+					files.Add(file);
+			}
+
+			if (scanRecursively)
+				foreach (DirectoryInfo directory in path.GetDirectories())
+					files.AddRange(directory.GetFilesSelectively(true, statusDisplayer, extensions));
+
+			// TO DO: Implement exception handling for UnauthorizedAccessException
+
+			return files;
+		}
+
+		public static List<string> GetFilesSelectivelyFromDirectory(string path, bool scanRecursively, TextBox statusDisplayer = null, params string[] extensions)
+		{
+			List<string> files = new List<string>();
+			bool isAppropriate;
+
+			foreach (string file in Directory.GetFiles(path))
+			{
+				if (statusDisplayer != null)
+					statusDisplayer.Text = file;
+
+				isAppropriate = false;
+				foreach (string extension in extensions)
+					if (file.EndsWith("." + extension, true, System.Globalization.CultureInfo.InvariantCulture))
+					{
+						isAppropriate = true;
+						break;
+					}
+				if (isAppropriate)
+					files.Add(file);
+			}
+
+			if (scanRecursively)
+				foreach (string directory in Directory.GetDirectories(path))
+					files.AddRange(GetFilesSelectivelyFromDirectory(directory, true, statusDisplayer, extensions));
+
+			return files;
+		}
+		public static List<FileInfo> GetFilesSelectivelyFromDirectory(DirectoryInfo path, bool scanRecursively, TextBox statusDisplayer = null, params string[] extensions)
+		{
+			List<FileInfo> files = new List<FileInfo>();
+
+			foreach (FileInfo file in path.GetFiles())
+			{
+				if (statusDisplayer != null)
+					statusDisplayer.Text = file.FullName;
+
+				if (extensions.Contains(file.Extension.Replace(".", "")))
+					files.Add(file);
+			}
+
+			if (scanRecursively)
+				foreach (DirectoryInfo directory in path.GetDirectories())
+					files.AddRange(GetFilesSelectivelyFromDirectory(directory, true, statusDisplayer, extensions));
+
+			return files;
 		}
 	}
 }

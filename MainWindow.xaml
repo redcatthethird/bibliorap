@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:BiblioRap"
         xmlns:system="clr-namespace=System;assembly=mscorlib"
-        Background="DarkOliveGreen" SizeToContent="WidthAndHeight" MinHeight="300">
+        Background="DarkOliveGreen" SizeToContent="WidthAndHeight" MinHeight="200">
     <Window.CommandBindings>
         <CommandBinding Command="Help"
                         CanExecute="HelpCanExecute" Executed="HelpHasExecuted"/>
@@ -37,13 +37,13 @@
             </MenuItem>
             <MenuItem Header="_Help">
                 <MenuItem Command="Help" Header="{Binding Path=Command.Text, RelativeSource={RelativeSource Self}}"/>
-                <MenuItem Header="_About" Click="AboutButton_Click"/>
+                <MenuItem Header="_About" Click="ShowAboutDialog"/>
             </MenuItem>
             <Separator/>
             <MenuItem Header="This shouldn't be here. Please, make it go away!" x:Name="peskyLittleThing">
                 <MenuItem.ToolTip>
                     <ToolTip>
-                        Hint: If you click on it's sub-menu item 7 times, it will go away.
+                        Hint: If you click on it's sub-menu item 5 times, it will go away.
                     </ToolTip>
                 </MenuItem.ToolTip>
                 <MenuItem x:Name="peskyMenuItem" Click="peskyMenuItem_Click"/>
@@ -51,6 +51,7 @@
         </Menu>
         <Grid>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
@@ -74,13 +75,17 @@
         		</LinearGradientBrush>
         	</Grid.Background>
             <DockPanel Grid.Row="0">
-                <Label>Path to scan:</Label>
-                <TextBox Name="scanDirectory"/>
+                <Label DockPanel.Dock="Left" VerticalAlignment="Center">Folder to scan:</Label>
+                <Button DockPanel.Dock="Right" Name="BrowseButton" Click="BrowseButton_Click">Browse</Button>
+                <TextBox Name="ScanDirectory"/>
             </DockPanel>
-            <ListBox Grid.Row="1" Name="mediaFileList">
+            <StackPanel Grid.Row="1">
+                <CheckBox Name="isRecursiveScan" IsChecked="True">Scan Recursively</CheckBox>
+            </StackPanel>
+            <ListBox Grid.Row="2" Name="mediaFileList">
             </ListBox>
-            <DockPanel Grid.Row="2">
-                <Button DockPanel.Dock="Left" x:Name="ScanButton"
+            <DockPanel Grid.Row="3">
+                <Button DockPanel.Dock="Left" Name="ScanButton"
                         Click="ScanButton_Click" Margin="5">
                     Start Scan
                 </Button>
@@ -88,7 +93,7 @@
                         Click="SaveButton_Click" Margin="5">
                         Save filenames
                 </Button>
-                <Label Name="scanLabel">
+                <Label Name="scanLabel" VerticalAlignment="Center">
                     Here the scanning status shall be displayed.
                 </Label>
         </DockPanel>
