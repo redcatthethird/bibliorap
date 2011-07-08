@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using System.IO;
 
 namespace BiblioRap
@@ -33,7 +34,6 @@ namespace BiblioRap
 		{
 			e.CanExecute = true;
 		}
-
 		private void HelpHasExecuted(object sender, ExecutedRoutedEventArgs e)
 		{
 			MessageBox.Show(this,
@@ -44,17 +44,20 @@ namespace BiblioRap
 				MessageBoxButton.OK,
 				MessageBoxImage.Information);
 		}
-
 		private void CloseCanExecute(object sender, CanExecuteRoutedEventArgs e)
 		{
 			e.CanExecute = true;
 		}
-
 		private void CloseHasExecuted(object sender, ExecutedRoutedEventArgs e)
 		{
 			if (MessageBox.Show(this, "Do you really want to close \"" + this.Title + "\" ?",
 					"Annoying prompt", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
 				this.Close();
+		}
+
+		private void ShowAboutDialog(object sender, RoutedEventArgs e)
+		{
+			(new AboutDialog()).ShowDialog();
 		}
 
 		private void peskyMenuItem_Click(object sender, RoutedEventArgs e)
@@ -74,7 +77,7 @@ namespace BiblioRap
 				return;
 			}
 
-			List<FileInfo> files = scanPath.GetFilesSelectively(isRecursiveScan.IsChecked ?? true, ScanDirectory, ScannableExtensions);
+			List<FileInfo> files = scanPath.GetFilesSelectively(isRecursiveScan.IsChecked ?? true, scanLabel, ScannableExtensions);
 
 			mediaFileList.Items.Clear();
 			foreach (FileInfo file in files)
@@ -82,17 +85,10 @@ namespace BiblioRap
 				mediaFileList.Items.Add(file.Name);
 			}
         }
-
 		private void SaveButton_Click(object sender, RoutedEventArgs e)
 		{
 			throw new NotImplementedException();
 		}
-
-		private void ShowAboutDialog(object sender, RoutedEventArgs e)
-		{
-			(new AboutDialog()).ShowDialog();
-		}
-
 		private void BrowseButton_Click(object sender, RoutedEventArgs e)
 		{
 			throw new NotImplementedException();
@@ -101,15 +97,27 @@ namespace BiblioRap
 
 	public static class ExtensionMethods
 	{
-
-		public static List<FileInfo> GetFilesSelectively(this DirectoryInfo path, bool scanRecursively, TextBox statusDisplayer = null, params string[] extensions)
+		public static List<FileInfo> GetFilesSelectively(this DirectoryInfo path, bool scanRecursively, TextBlock statusDisplayer, params string[] extensions)
 		{
 			List<FileInfo> files = new List<FileInfo>();
 
-			foreach (FileInfo file in path.GetFiles())
+			FileInfo[] allFiles;
+			try
+			{
+				allFiles = path.GetFiles();
+			}
+			catch (UnauthorizedAccessException)
+			{
+				return new List<FileInfo>();
+			}
+
+			foreach (FileInfo file in allFiles)
 			{
 				if (statusDisplayer != null)
+				{
 					statusDisplayer.Text = file.FullName;
+					statusDisplayer.Refresh();
+				}
 
 				if (extensions.Contains(file.Extension.Replace(".", "")))
 					files.Add(file);
@@ -119,20 +127,30 @@ namespace BiblioRap
 				foreach (DirectoryInfo directory in path.GetDirectories())
 					files.AddRange(directory.GetFilesSelectively(true, statusDisplayer, extensions));
 
-			// TO DO: Implement exception handling for UnauthorizedAccessException
-
 			return files;
 		}
-
-		public static List<string> GetFilesSelectivelyFromDirectory(string path, bool scanRecursively, TextBox statusDisplayer = null, params string[] extensions)
+		public static List<string> GetFilesSelectivelyFromDirectory(string path, bool scanRecursively, TextBlock statusDisplayer, params string[] extensions)
 		{
 			List<string> files = new List<string>();
 			bool isAppropriate;
 
-			foreach (string file in Directory.GetFiles(path))
+			string[] allFiles;
+			try
+			{
+				allFiles = Directory.GetFiles(path);
+			}
+			catch (UnauthorizedAccessException)
+			{
+				return new List<string>();
+			}
+
+			foreach (string file in allFiles)
 			{
 				if (statusDisplayer != null)
+				{
 					statusDisplayer.Text = file;
+					statusDisplayer.Refresh();
+				}
 
 				isAppropriate = false;
 				foreach (string extension in extensions)
@@ -151,14 +169,27 @@ namespace BiblioRap
 
 			return files;
 		}
-		public static List<FileInfo> GetFilesSelectivelyFromDirectory(DirectoryInfo path, bool scanRecursively, TextBox statusDisplayer = null, params string[] extensions)
+		public static List<FileInfo> GetFilesSelectivelyFromDirectory(DirectoryInfo path, bool scanRecursively, TextBlock statusDisplayer, params string[] extensions)
 		{
 			List<FileInfo> files = new List<FileInfo>();
 
-			foreach (FileInfo file in path.GetFiles())
+			FileInfo[] allFiles;
+			try
+			{
+				allFiles = path.GetFiles();
+			}
+			catch (UnauthorizedAccessException)
+			{
+				return new List<FileInfo>();
+			}
+
+			foreach (FileInfo file in allFiles)
 			{
 				if (statusDisplayer != null)
-					statusDisplayer.Text = file.FullName;
+				{
+					statusDisplayer.Text= file.FullName;
+					statusDisplayer.Refresh();
+				}
 
 				if (extensions.Contains(file.Extension.Replace(".", "")))
 					files.Add(file);
@@ -169,6 +200,116 @@ namespace BiblioRap
 					files.AddRange(GetFilesSelectivelyFromDirectory(directory, true, statusDisplayer, extensions));
 
 			return files;
+		}
+		public static List<FileInfo> GetFilesSelectively(this DirectoryInfo path, bool scanRecursively, ContentControl statusDisplayer, params string[] extensions)
+		{
+			List<FileInfo> files = new List<FileInfo>();
+
+			FileInfo[] allFiles;
+			try
+			{
+				allFiles = path.GetFiles();
+			}
+			catch (UnauthorizedAccessException)
+			{
+				return new List<FileInfo>();
+			}
+
+			foreach (FileInfo file in allFiles)
+			{
+				if (statusDisplayer != null)
+				{
+					statusDisplayer.Content = file.FullName;
+					statusDisplayer.Refresh();
+				}
+
+				if (extensions.Contains(file.Extension.Replace(".", "")))
+					files.Add(file);
+			}
+
+			if (scanRecursively)
+				foreach (DirectoryInfo directory in path.GetDirectories())
+					files.AddRange(directory.GetFilesSelectively(true, statusDisplayer, extensions));
+
+			return files;
+		}
+		public static List<string> GetFilesSelectivelyFromDirectory(string path, bool scanRecursively, ContentControl statusDisplayer, params string[] extensions)
+		{
+			List<string> files = new List<string>();
+			bool isAppropriate;
+
+			string[] allFiles;
+			try
+			{
+				allFiles = Directory.GetFiles(path);
+			}
+			catch (UnauthorizedAccessException)
+			{
+				return new List<string>();
+			}
+
+			foreach (string file in allFiles)
+			{
+				if (statusDisplayer != null)
+				{
+					statusDisplayer.Content = file;
+					statusDisplayer.Refresh();
+				}
+
+				isAppropriate = false;
+				foreach (string extension in extensions)
+					if (file.EndsWith("." + extension, true, System.Globalization.CultureInfo.InvariantCulture))
+					{
+						isAppropriate = true;
+						break;
+					}
+				if (isAppropriate)
+					files.Add(file);
+			}
+
+			if (scanRecursively)
+				foreach (string directory in Directory.GetDirectories(path))
+					files.AddRange(GetFilesSelectivelyFromDirectory(directory, true, statusDisplayer, extensions));
+
+			return files;
+		}
+		public static List<FileInfo> GetFilesSelectivelyFromDirectory(DirectoryInfo path, bool scanRecursively, ContentControl statusDisplayer, params string[] extensions)
+		{
+			List<FileInfo> files = new List<FileInfo>();
+
+			FileInfo[] allFiles;
+			try
+			{
+				allFiles = path.GetFiles();
+			}
+			catch (UnauthorizedAccessException)
+			{
+				return new List<FileInfo>();
+			}
+
+			foreach (FileInfo file in allFiles)
+			{
+				if (statusDisplayer != null)
+				{
+					statusDisplayer.Content = file.FullName;
+					statusDisplayer.Refresh();
+				}
+
+				if (extensions.Contains(file.Extension.Replace(".", "")))
+					files.Add(file);
+			}
+
+			if (scanRecursively)
+				foreach (DirectoryInfo directory in path.GetDirectories())
+					files.AddRange(GetFilesSelectivelyFromDirectory(directory, true, statusDisplayer, extensions));
+
+			return files;
+		}
+
+		private static Action EmptyDelegate = delegate() { };
+		public static void Refresh(this UIElement elem)
+		{
+			elem.Dispatcher.Invoke(EmptyDelegate, DispatcherPriority.Render);
 		}
 	}
 }
