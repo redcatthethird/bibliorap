@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:BiblioRap"
         xmlns:system="clr-namespace=System;assembly=mscorlib"
-        Background="DarkOliveGreen" SizeToContent="WidthAndHeight" MinHeight="200">
+        MinHeight="200" MinWidth="400">
     <Window.CommandBindings>
         <CommandBinding Command="Help"
                         CanExecute="HelpCanExecute" Executed="HelpHasExecuted"/>
@@ -93,9 +93,9 @@
                         Click="SaveButton_Click" Margin="5">
                         Save filenames
                 </Button>
-                <Label Name="scanLabel" VerticalAlignment="Center">
+                <TextBlock Name="scanLabel" VerticalAlignment="Center" TextTrimming="CharacterEllipsis">
                     Here the scanning status shall be displayed.
-                </Label>
+                </TextBlock>
         </DockPanel>
     </Grid>
     </DockPanel>
