@@ -3,35 +3,34 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:BiblioRap"
         xmlns:system="clr-namespace=System;assembly=mscorlib"
-        MinHeight="200" MinWidth="400">
+        MinHeight="200" MinWidth="400"
+        >
     <Window.CommandBindings>
         <CommandBinding Command="Help"
                         CanExecute="HelpCanExecute" Executed="HelpHasExecuted"/>
         <CommandBinding Command="Close"
                         CanExecute="CloseCanExecute" Executed="CloseHasExecuted"/>
     </Window.CommandBindings>
-    <Window.Resources>
-    </Window.Resources>
     <DockPanel>
-        <Menu DockPanel.Dock="Top">
-        	<Menu.Background>
-        		<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-        			<LinearGradientBrush.RelativeTransform>
-        				<TransformGroup>
-        					<ScaleTransform CenterY="0.5" CenterX="0.5" ScaleY="1.247" ScaleX="1"/>
-        					<SkewTransform AngleY="-0.611" AngleX="0" CenterY="0.5" CenterX="0.5"/>
-        					<RotateTransform Angle="90.204" CenterY="0.5" CenterX="0.5"/>
-        					<TranslateTransform X="0.128"/>
-        				</TransformGroup>
-        			</LinearGradientBrush.RelativeTransform>
-        			<GradientStop Color="#FFF3F3F3" Offset="0.122"/>
-        			<GradientStop Color="White" Offset="1"/>
-        			<GradientStop Color="#FF33EFC0" Offset="0.343"/>
-        			<GradientStop Color="#FF1CDAAA" Offset="0.417"/>
-        			<GradientStop Color="#FF54E5C0" Offset="0.674"/>
-        			<GradientStop Color="White" Offset="0.348"/>
-        		</LinearGradientBrush>
-        	</Menu.Background>
+        <Menu DockPanel.Dock="Top" IsMainMenu="True">
+            <Menu.Background>
+        	    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+        		    <LinearGradientBrush.RelativeTransform>
+        			    <TransformGroup>
+        				    <ScaleTransform CenterY="0.5" CenterX="0.5" ScaleY="1.247" ScaleX="1"/>
+        				    <SkewTransform AngleY="-0.611" AngleX="0" CenterY="0.5" CenterX="0.5"/>
+        				    <RotateTransform Angle="90.204" CenterY="0.5" CenterX="0.5"/>
+        				    <TranslateTransform X="0.128"/>
+        			    </TransformGroup>
+        		    </LinearGradientBrush.RelativeTransform>
+        		    <GradientStop Color="#FFF3F3F3" Offset="0.122"/>
+        		    <GradientStop Color="White" Offset="1"/>
+        		    <GradientStop Color="#FF33EFC0" Offset="0.343"/>
+        		    <GradientStop Color="#FF1CDAAA" Offset="0.417"/>
+        		    <GradientStop Color="#FF54E5C0" Offset="0.674"/>
+        		    <GradientStop Color="White" Offset="0.348"/>
+        	    </LinearGradientBrush>
+            </Menu.Background>
             <MenuItem Header="_File">
                 <MenuItem Header="_Exit" Command="Close"/>
             </MenuItem>
@@ -39,16 +38,17 @@
                 <MenuItem Command="Help" Header="{Binding Path=Command.Text, RelativeSource={RelativeSource Self}}"/>
                 <MenuItem Header="_About" Click="ShowAboutDialog"/>
             </MenuItem>
-            <Separator/>
-            <MenuItem Header="This shouldn't be here. Please, make it go away!" x:Name="peskyLittleThing">
-                <MenuItem.ToolTip>
-                    <ToolTip>
-                        Hint: If you click on it's sub-menu item 5 times, it will go away.
-                    </ToolTip>
-                </MenuItem.ToolTip>
-                <MenuItem x:Name="peskyMenuItem" Click="peskyMenuItem_Click"/>
-            </MenuItem>
         </Menu>
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem DockPanel.Dock="Right">
+                <ProgressBar Name="ScanProgressBar" Width="100" Height="16"/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Name="ScanLabel" VerticalAlignment="Center" TextTrimming="CharacterEllipsis">
+                    Here the scanning status shall be displayed.
+                </TextBlock>
+            </StatusBarItem>
+        </StatusBar>
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -56,28 +56,28 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-        	<Grid.Background>
-        		<LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-        			<LinearGradientBrush.RelativeTransform>
-        				<TransformGroup>
-        					<ScaleTransform CenterY="0.5" CenterX="0.5" ScaleY="3.123" ScaleX="1"/>
-        					<SkewTransform AngleY="-1.271" AngleX="0" CenterY="0.5" CenterX="0.5"/>
-        					<RotateTransform Angle="77.611" CenterY="0.5" CenterX="0.5"/>
-        					<TranslateTransform X="0.345" Y="-0.279"/>
-        				</TransformGroup>
-        			</LinearGradientBrush.RelativeTransform>
-        			<GradientStop Color="White" Offset="1"/>
-        			<GradientStop Color="#FF81CEFF" Offset="0.5"/>
-        			<GradientStop Color="#FF2CADFF" Offset="0.51"/>
-        			<GradientStop Color="White" Offset="0.426"/>
-        			<GradientStop Color="#FF25E4CE" Offset="0.643"/>
-        			<GradientStop Color="#FF31D9E5" Offset="0.496"/>
-        		</LinearGradientBrush>
-        	</Grid.Background>
+            <Grid.Background>
+        	    <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+        		    <LinearGradientBrush.RelativeTransform>
+        			    <TransformGroup>
+        				    <ScaleTransform CenterY="0.5" CenterX="0.5" ScaleY="3.123" ScaleX="1"/>
+        				    <SkewTransform AngleY="-1.271" AngleX="0" CenterY="0.5" CenterX="0.5"/>
+        				    <RotateTransform Angle="77.611" CenterY="0.5" CenterX="0.5"/>
+        				    <TranslateTransform X="0.345" Y="-0.279"/>
+        			    </TransformGroup>
+        		    </LinearGradientBrush.RelativeTransform>
+        		    <GradientStop Color="White" Offset="1"/>
+        		    <GradientStop Color="#FF81CEFF" Offset="0.5"/>
+        		    <GradientStop Color="#FF2CADFF" Offset="0.51"/>
+        		    <GradientStop Color="White" Offset="0.426"/>
+        		    <GradientStop Color="#FF25E4CE" Offset="0.643"/>
+        		    <GradientStop Color="#FF31D9E5" Offset="0.496"/>
+        	    </LinearGradientBrush>
+            </Grid.Background>
             <DockPanel Grid.Row="0">
                 <Label DockPanel.Dock="Left" VerticalAlignment="Center">Folder to scan:</Label>
                 <Button DockPanel.Dock="Right" Name="BrowseButton" Click="BrowseButton_Click">Browse</Button>
-                <TextBox Name="ScanDirectory"/>
+                <TextBox Name="ScanDirectory" Text="J:" />
             </DockPanel>
             <StackPanel Grid.Row="1">
                 <CheckBox Name="isRecursiveScan" IsChecked="True">Scan Recursively</CheckBox>
@@ -85,17 +85,14 @@
             <ListBox Grid.Row="2" Name="mediaFileList">
             </ListBox>
             <DockPanel Grid.Row="3">
-                <Button DockPanel.Dock="Left" Name="ScanButton"
-                        Click="ScanButton_Click" Margin="5">
-                    Start Scan
-                </Button>
                 <Button DockPanel.Dock="Right" x:Name="SaveButton"
                         Click="SaveButton_Click" Margin="5">
                         Save filenames
                 </Button>
-                <TextBlock Name="scanLabel" VerticalAlignment="Center" TextTrimming="CharacterEllipsis">
-                    Here the scanning status shall be displayed.
-                </TextBlock>
+                <Button Name="ScanButton"
+                        Click="ScanButton_Click" Margin="5">
+                    Start Scan
+                </Button>
         </DockPanel>
     </Grid>
     </DockPanel>

@@ -23,8 +23,6 @@ namespace BiblioRap
 	{
 		public static string[] ScannableExtensions = ("avi" + ',' + "mp3" + ',' + "jpg,jpeg,png,gif,bmp,tiff").Split(',');
 
-		public static int PeskyMenuItemClickCount = 0;
-
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -60,13 +58,6 @@ namespace BiblioRap
 			(new AboutDialog()).ShowDialog();
 		}
 
-		private void peskyMenuItem_Click(object sender, RoutedEventArgs e)
-		{
-			PeskyMenuItemClickCount++;
-			if (PeskyMenuItemClickCount >= 5)
-				peskyLittleThing.Visibility = Visibility.Collapsed;
-		}
-
         private void ScanButton_Click(object sender, RoutedEventArgs e)
         {
 			DirectoryInfo scanPath = new DirectoryInfo(ScanDirectory.Text);
@@ -77,7 +68,7 @@ namespace BiblioRap
 				return;
 			}
 
-			List<FileInfo> files = scanPath.GetFilesSelectively(isRecursiveScan.IsChecked ?? true, scanLabel, ScannableExtensions);
+			List<FileInfo> files = scanPath.GetFilesSelectively(isRecursiveScan.IsChecked ?? true, ScanLabel, ScanProgressBar, ScannableExtensions);
 
 			mediaFileList.Items.Clear();
 			foreach (FileInfo file in files)
@@ -97,7 +88,7 @@ namespace BiblioRap
 
 	public static class ExtensionMethods
 	{
-		public static List<FileInfo> GetFilesSelectively(this DirectoryInfo path, bool scanRecursively, TextBlock statusDisplayer, params string[] extensions)
+		public static List<FileInfo> GetFilesSelectively(this DirectoryInfo path, bool scanRecursively, TextBlock statusDisplayer, ProgressBar statusProgress, params string[] extensions)
 		{
 			List<FileInfo> files = new List<FileInfo>();
 
@@ -111,11 +102,21 @@ namespace BiblioRap
 				return new List<FileInfo>();
 			}
 
+			uint fileCount = 0;
+			if (statusProgress != null)
+				statusProgress.Maximum = path.GetFileCountSelectively(scanRecursively, extensions);
+
 			foreach (FileInfo file in allFiles)
 			{
+				fileCount++;
 				if (statusDisplayer != null)
 				{
 					statusDisplayer.Text = file.FullName;
+					statusDisplayer.Refresh();
+				}
+				if (statusProgress != null)
+				{
+					statusProgress.Value = fileCount;
 					statusDisplayer.Refresh();
 				}
 
@@ -125,7 +126,7 @@ namespace BiblioRap
 
 			if (scanRecursively)
 				foreach (DirectoryInfo directory in path.GetDirectories())
-					files.AddRange(directory.GetFilesSelectively(true, statusDisplayer, extensions));
+					files.AddRange(directory.GetFilesSelectively(true, statusDisplayer, statusProgress, extensions));
 
 			return files;
 		}
@@ -201,9 +202,10 @@ namespace BiblioRap
 
 			return files;
 		}
-		public static List<FileInfo> GetFilesSelectively(this DirectoryInfo path, bool scanRecursively, ContentControl statusDisplayer, params string[] extensions)
+
+		public static int GetFileCountSelectively(this DirectoryInfo path, bool scanRecursively, params string[] extensions)
 		{
-			List<FileInfo> files = new List<FileInfo>();
+			int fileCount = 0;
 
 			FileInfo[] allFiles;
 			try
@@ -212,30 +214,22 @@ namespace BiblioRap
 			}
 			catch (UnauthorizedAccessException)
 			{
-				return new List<FileInfo>();
+				return 0;
 			}
 
 			foreach (FileInfo file in allFiles)
-			{
-				if (statusDisplayer != null)
-				{
-					statusDisplayer.Content = file.FullName;
-					statusDisplayer.Refresh();
-				}
-
 				if (extensions.Contains(file.Extension.Replace(".", "")))
-					files.Add(file);
-			}
+					fileCount++;
 
 			if (scanRecursively)
 				foreach (DirectoryInfo directory in path.GetDirectories())
-					files.AddRange(directory.GetFilesSelectively(true, statusDisplayer, extensions));
+					fileCount += directory.GetFileCountSelectively(true, extensions);
 
-			return files;
+			return fileCount;
 		}
-		public static List<string> GetFilesSelectivelyFromDirectory(string path, bool scanRecursively, ContentControl statusDisplayer, params string[] extensions)
+		public static int GetFileCountSelectivelyFromDirectory(string path, bool scanRecursively, params string[] extensions)
 		{
-			List<string> files = new List<string>();
+			int fileCount = 0;
 			bool isAppropriate;
 
 			string[] allFiles;
@@ -245,17 +239,11 @@ namespace BiblioRap
 			}
 			catch (UnauthorizedAccessException)
 			{
-				return new List<string>();
+				return 0;
 			}
 
 			foreach (string file in allFiles)
 			{
-				if (statusDisplayer != null)
-				{
-					statusDisplayer.Content = file;
-					statusDisplayer.Refresh();
-				}
-
 				isAppropriate = false;
 				foreach (string extension in extensions)
 					if (file.EndsWith("." + extension, true, System.Globalization.CultureInfo.InvariantCulture))
@@ -264,18 +252,18 @@ namespace BiblioRap
 						break;
 					}
 				if (isAppropriate)
-					files.Add(file);
+					fileCount++;
 			}
 
 			if (scanRecursively)
 				foreach (string directory in Directory.GetDirectories(path))
-					files.AddRange(GetFilesSelectivelyFromDirectory(directory, true, statusDisplayer, extensions));
+					fileCount += GetFileCountSelectivelyFromDirectory(directory, true, extensions);
 
-			return files;
+			return fileCount;
 		}
-		public static List<FileInfo> GetFilesSelectivelyFromDirectory(DirectoryInfo path, bool scanRecursively, ContentControl statusDisplayer, params string[] extensions)
+		public static int GetFileCountSelectivelyFromDirectory(DirectoryInfo path, bool scanRecursively, params string[] extensions)
 		{
-			List<FileInfo> files = new List<FileInfo>();
+			int fileCount = 0;
 
 			FileInfo[] allFiles;
 			try
@@ -284,27 +272,20 @@ namespace BiblioRap
 			}
 			catch (UnauthorizedAccessException)
 			{
-				return new List<FileInfo>();
+				return 0;
 			}
 
 			foreach (FileInfo file in allFiles)
-			{
-				if (statusDisplayer != null)
-				{
-					statusDisplayer.Content = file.FullName;
-					statusDisplayer.Refresh();
-				}
-
 				if (extensions.Contains(file.Extension.Replace(".", "")))
-					files.Add(file);
-			}
+					fileCount++;
 
 			if (scanRecursively)
 				foreach (DirectoryInfo directory in path.GetDirectories())
-					files.AddRange(GetFilesSelectivelyFromDirectory(directory, true, statusDisplayer, extensions));
+					fileCount += GetFileCountSelectivelyFromDirectory(directory, true, extensions);
 
-			return files;
+			return fileCount;
 		}
+
 
 		private static Action EmptyDelegate = delegate() { };
 		public static void Refresh(this UIElement elem)
