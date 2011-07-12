@@ -13,6 +13,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using System.IO;
+using Microsoft.Win32;
+using WF = System.Windows.Forms;
 
 namespace BiblioRap
 {
@@ -78,11 +80,32 @@ namespace BiblioRap
         }
 		private void SaveButton_Click(object sender, RoutedEventArgs e)
 		{
-			throw new NotImplementedException();
+			SaveFileDialog sfDlg = new SaveFileDialog();
+			sfDlg.AddExtension = true;
+			sfDlg.CheckPathExists = true;
+			sfDlg.DefaultExt = ".txt";
+			sfDlg.DereferenceLinks = true;
+			sfDlg.Filter = "Text files|*.txt|All files|*.*";
+			sfDlg.OverwritePrompt = true;
+			sfDlg.Title = "Save file list";
+			sfDlg.ValidateNames = true;
+
+			if (sfDlg.ShowDialog() == true)
+			{
+				using (TextWriter writer = new StreamWriter(sfDlg.FileName))
+				{
+					foreach (string file in mediaFileList.Items)
+					{
+						writer.WriteLine(file);
+					}
+				}
+			}
 		}
 		private void BrowseButton_Click(object sender, RoutedEventArgs e)
 		{
-			throw new NotImplementedException();
+			WF.FolderBrowserDialog fbDlg = new WF.FolderBrowserDialog();
+			if (fbDlg.ShowDialog() == WF.DialogResult.OK)
+				ScanDirectory.Text = fbDlg.SelectedPath;
 		}
 	}
 
