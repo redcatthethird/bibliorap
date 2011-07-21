@@ -13,7 +13,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using System.Threading;
-using System.IO;
+using IO = System.IO;
 using Microsoft.Win32;
 using WF = System.Windows.Forms;
 
@@ -63,16 +63,29 @@ namespace BiblioRap
 
         private void ScanButton_Click(object sender, RoutedEventArgs e)
         {
-			DirectoryInfo scanPath = new DirectoryInfo(ScanDirectory.Text);
-			if (!scanPath.Exists)
+			string path = ScanDirectory.Text.Trim();
+			bool recursive = isRecursiveScan.IsChecked ?? false;
+			if (path == "*")
 			{
-				MessageBox.Show(this, "The directory doesn't exist ! Please check if it is typed correctly,",
-					"Directory missing !", MessageBoxButton.OK, MessageBoxImage.Exclamation, MessageBoxResult.OK);
-				return;
+				string[] drives = IO.Directory.GetLogicalDrives();
+				foreach (string drive in drives)
+				{
+					(new IO.DirectoryInfo(drive)).GetFilesSelectively(recursive, ScanLabel, ScanProgressBar, mediaFileList, ScannableExtensions);
+				}
 			}
+			else
+			{
+				IO.DirectoryInfo scanPath = new IO.DirectoryInfo(path);
+				if (!scanPath.Exists)
+				{
+					MessageBox.Show(this, "The directory doesn't exist ! Please check if it is typed correctly,",
+						"IO.Directory missing !", MessageBoxButton.OK, MessageBoxImage.Exclamation, MessageBoxResult.OK);
+					return;
+				}
 
-			mediaFileList.Items.Clear();
-			scanPath.GetFilesSelectively(isRecursiveScan.IsChecked ?? true, ScanLabel, ScanProgressBar, mediaFileList, ScannableExtensions);
+				mediaFileList.Items.Clear();
+				scanPath.GetFilesSelectively(recursive, ScanLabel, ScanProgressBar, mediaFileList, ScannableExtensions);
+			}
         }
 		private void SaveButton_Click(object sender, RoutedEventArgs e)
 		{
@@ -88,7 +101,7 @@ namespace BiblioRap
 
 			if (sfDlg.ShowDialog() == true)
 			{
-				using (TextWriter writer = new StreamWriter(sfDlg.FileName))
+				using (IO.TextWriter writer = new IO.StreamWriter(sfDlg.FileName))
 				{
 					foreach (string file in mediaFileList.Items)
 					{
@@ -107,10 +120,11 @@ namespace BiblioRap
 
 	public static class ExtensionMethods
 	{
-		private static uint WantedFilesCounter;
+		public static uint WantedFilesCounter;
+		public static uint WantedFilesScanCounter;
 
 		public static void GetFilesSelectively(
-			this DirectoryInfo path,
+			this IO.DirectoryInfo path,
 			bool scanRecursively,
 			TextBlock statusDisplayer,
 			ProgressBar statusProgress,
@@ -119,54 +133,64 @@ namespace BiblioRap
 		{
 			if (statusProgress != null)
 			{
-				if (statusProgress.Dispatcher.CheckAccess())
+				WantedFilesCounter = 0;
+				Thread counter = new Thread(new ThreadStart(delegate()
 				{
-					statusProgress.Maximum = path.GetFileCountSelectively(true, extensions);
-					statusDisplayer.Refresh();
-				}
-				else
-				{
-					statusProgress.Dispatcher.BeginInvoke(
-						DispatcherPriority.Normal,
-						new Action(
-							delegate()
-							{
-								statusProgress.Maximum = path.GetFileCountSelectively(true, extensions);
-							}
-					));
-				}
-
+					path.GetFileCountSelectively(true, statusProgress, extensions);
+				}));
+				counter.Name = "File counting thread";
+				counter.Start();
+				counter.Join();
 			}
 
-			WantedFilesCounter = 0;
+			statusProgress.Dispatcher.BeginInvoke(new Action(delegate()
+			{
+				statusProgress.Maximum = WantedFilesCounter;
+			}));
+			Thread.Sleep(0);
 
-			path._GetFilesSelectively(scanRecursively, statusDisplayer, statusProgress, statusItems, extensions);
+			WantedFilesScanCounter = 0;
+			
+			Thread scanner = new Thread(new ThreadStart(delegate()
+			{
+				path._GetFilesSelectively(scanRecursively, statusDisplayer, statusProgress, statusItems, extensions);
+			}));
+			scanner.Name = "File scanning thread";
+			scanner.Start();
 		}
 		public static void _GetFilesSelectively(
-			this DirectoryInfo path,
+			this IO.DirectoryInfo path,
 			bool scanRecursively,
 			TextBlock statusDisplayer,
 			ProgressBar statusProgress,
 			ListBox statusItems,
 			params string[] extensions)
 		{
-			Thread scanner = new Thread(new ThreadStart(delegate()
+			IO.FileInfo[] allFiles;
+			try
 			{
+				allFiles = path.GetFiles();
+			}
+			catch (UnauthorizedAccessException)
+			{
+				return;
+			}
+			catch (IO.IOException)
+			{
+				return;
+			}
+			catch (System.Security.SecurityException)
+			{
+				return;
+			}
 
-				List<FileInfo> files = new List<FileInfo>();
+			foreach (IO.FileInfo file in allFiles)
+			{
+				// If the file's type is among the wanted ones :
+				if (extensions.Contains(file.Extension.Replace(".", "")))
+				{
+					WantedFilesScanCounter++;
 
-				FileInfo[] allFiles;
-				try
-				{
-					allFiles = path.GetFiles();
-				}
-				catch (UnauthorizedAccessException)
-				{
-					return;
-				}
-
-				foreach (FileInfo file in allFiles)
-				{
 					if (statusProgress != null)
 					{
 						statusProgress.Dispatcher.BeginInvoke(
@@ -174,53 +198,39 @@ namespace BiblioRap
 							new Action(
 								delegate()
 								{
-									statusProgress.Value = WantedFilesCounter;
+									statusProgress.Value = WantedFilesScanCounter;
 								}
 						));
 					}
 
-					// If the file's type is among the wanted ones :
-					if (extensions.Contains(file.Extension.Replace(".", "")))
+					statusItems.Dispatcher.BeginInvoke(
+						DispatcherPriority.Normal,
+						new Action(
+							delegate()
+							{
+								statusItems.Items.Add(file.Name);
+							}
+					));
+
+					if (statusDisplayer != null)
 					{
-						files.Add(file);
-						WantedFilesCounter++;
-
-						if (statusItems != null)
-						{
-							statusItems.Dispatcher.BeginInvoke(
-								DispatcherPriority.Normal,
-								new Action(
-									delegate()
-									{
-										statusItems.Items.Add(file.Name);
-									}
-							));
-						}
-
-
-						if (statusDisplayer != null)
-						{
-							statusDisplayer.Dispatcher.BeginInvoke(
-								DispatcherPriority.Normal,
-								new Action(
-									delegate()
-									{
-										statusDisplayer.Text = file.FullName;
-									}
-							));
-						}
-
-						Thread.Sleep(1000); // TO BE REMOVED AFTER TESTING...
+						statusDisplayer.Dispatcher.BeginInvoke(
+							DispatcherPriority.Normal,
+							new Action(
+								delegate()
+								{
+									statusDisplayer.Text = file.FullName;
+								}
+						));
 					}
+
+					Thread.Sleep(7);
 				}
+			}
 
-				if (scanRecursively)
-					foreach (DirectoryInfo directory in path.GetDirectories())
-						directory.GetFilesSelectively(true, statusDisplayer, statusProgress, statusItems, extensions);
-
-			} ));
-
-			scanner.Start();
+			if (scanRecursively)
+				foreach (IO.DirectoryInfo directory in path.GetDirectories())
+					directory._GetFilesSelectively(true, statusDisplayer, statusProgress, statusItems, extensions);
 		}
 
 
@@ -232,7 +242,7 @@ namespace BiblioRap
 			string[] allFiles;
 			try
 			{
-				allFiles = Directory.GetFiles(path);
+				allFiles = IO.Directory.GetFiles(path);
 			}
 			catch (UnauthorizedAccessException)
 			{
@@ -259,26 +269,26 @@ namespace BiblioRap
 			}
 
 			if (scanRecursively)
-				foreach (string directory in Directory.GetDirectories(path))
+				foreach (string directory in IO.Directory.GetDirectories(path))
 					files.AddRange(GetFilesSelectivelyFromDirectory(directory, true, statusDisplayer, extensions));
 
 			return files;
 		}
-		public static List<FileInfo> GetFilesSelectivelyFromDirectory(DirectoryInfo path, bool scanRecursively, TextBlock statusDisplayer, params string[] extensions)
+		public static List<IO.FileInfo> GetFilesSelectivelyFromDirectory(IO.DirectoryInfo path, bool scanRecursively, TextBlock statusDisplayer, params string[] extensions)
 		{
-			List<FileInfo> files = new List<FileInfo>();
+			List<IO.FileInfo> files = new List<IO.FileInfo>();
 
-			FileInfo[] allFiles;
+			IO.FileInfo[] allFiles;
 			try
 			{
 				allFiles = path.GetFiles();
 			}
 			catch (UnauthorizedAccessException)
 			{
-				return new List<FileInfo>();
+				return new List<IO.FileInfo>();
 			}
 
-			foreach (FileInfo file in allFiles)
+			foreach (IO.FileInfo file in allFiles)
 			{
 				if (statusDisplayer != null)
 				{
@@ -291,44 +301,40 @@ namespace BiblioRap
 			}
 
 			if (scanRecursively)
-				foreach (DirectoryInfo directory in path.GetDirectories())
+				foreach (IO.DirectoryInfo directory in path.GetDirectories())
 					files.AddRange(GetFilesSelectivelyFromDirectory(directory, true, statusDisplayer, extensions));
 
 			return files;
 		}
 
-		public static int GetFileCountSelectively(this DirectoryInfo path, bool scanRecursively, params string[] extensions)
+		public static void GetFileCountSelectively(this IO.DirectoryInfo path, bool scanRecursively, ProgressBar countDisplayer, params string[] extensions)
 		{
-			int fileCount = 0;
-
-			FileInfo[] allFiles;
+			IO.FileInfo[] allFiles;
 			try
 			{
 				allFiles = path.GetFiles();
 			}
 			catch (UnauthorizedAccessException)
 			{
-				return 0;
+				return;
+			}
+			catch (IO.IOException)
+			{
+				return;
+			}
+			catch (System.Security.SecurityException)
+			{
+				return;
 			}
 
-			//Thread scanner = new Thread(new ThreadStart(delegate()
-			//{
 
-
-			foreach (FileInfo file in allFiles)
+			foreach (IO.FileInfo file in allFiles)
 				if (extensions.Contains(file.Extension.Replace(".", "")))
-					fileCount++;
+					WantedFilesCounter++;
 
 			if (scanRecursively)
-				foreach (DirectoryInfo directory in path.GetDirectories())
-					fileCount += directory.GetFileCountSelectively(true, extensions);
-
-			//} ));
-
-			//scanner.Start();
-			//scanner.Join();
-
-			return fileCount;
+				foreach (IO.DirectoryInfo directory in path.GetDirectories())
+					directory.GetFileCountSelectively(true, countDisplayer, extensions);
 		}
 
 		public static uint GetFileCountSelectivelyFromDirectory(string path, bool scanRecursively, params string[] extensions)
@@ -339,7 +345,7 @@ namespace BiblioRap
 			string[] allFiles;
 			try
 			{
-				allFiles = Directory.GetFiles(path);
+				allFiles = IO.Directory.GetFiles(path);
 			}
 			catch (UnauthorizedAccessException)
 			{
@@ -360,16 +366,16 @@ namespace BiblioRap
 			}
 
 			if (scanRecursively)
-				foreach (string directory in Directory.GetDirectories(path))
+				foreach (string directory in IO.Directory.GetDirectories(path))
 					fileCount += GetFileCountSelectivelyFromDirectory(directory, true, extensions);
 
 			return fileCount;
 		}
-		public static uint GetFileCountSelectivelyFromDirectory(DirectoryInfo path, bool scanRecursively, params string[] extensions)
+		public static uint GetFileCountSelectivelyFromDirectory(IO.DirectoryInfo path, bool scanRecursively, params string[] extensions)
 		{
 			uint fileCount = 0;
 
-			FileInfo[] allFiles;
+			IO.FileInfo[] allFiles;
 			try
 			{
 				allFiles = path.GetFiles();
@@ -379,12 +385,12 @@ namespace BiblioRap
 				return 0;
 			}
 
-			foreach (FileInfo file in allFiles)
+			foreach (IO.FileInfo file in allFiles)
 				if (extensions.Contains(file.Extension.Replace(".", "")))
 					fileCount++;
 
 			if (scanRecursively)
-				foreach (DirectoryInfo directory in path.GetDirectories())
+				foreach (IO.DirectoryInfo directory in path.GetDirectories())
 					fileCount += GetFileCountSelectivelyFromDirectory(directory, true, extensions);
 
 			return fileCount;
