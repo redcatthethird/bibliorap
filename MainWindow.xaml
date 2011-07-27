@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:BiblioRap"
         xmlns:system="clr-namespace=System;assembly=mscorlib"
+        xmlns:io="clr-namespace:System.IO;assembly=mscorlib"
         MinHeight="200" MinWidth="400"
         >
     <Window.CommandBindings>
@@ -79,10 +80,26 @@
                 <Button DockPanel.Dock="Right" Name="BrowseButton" Click="BrowseButton_Click">Browse</Button>
                 <TextBox Name="ScanDirectory" Text="J:" />
             </DockPanel>
-            <StackPanel Grid.Row="1">
-                <CheckBox Name="isRecursiveScan" IsChecked="True">Scan Recursively</CheckBox>
+            <StackPanel Grid.Row="1" Orientation="Horizontal">
+                <StackPanel.Resources>
+                    <Style TargetType="{x:Type CheckBox}">
+                        <Setter Property="Margin" Value="0,0,10,0"/>
+                    </Style>
+                </StackPanel.Resources>
+                <CheckBox Name="isRecursiveScan" IsChecked="True">Scan recursively</CheckBox>
+                <CheckBox Name="showFullPath">Show full paths</CheckBox>
             </StackPanel>
-            <ListBox Grid.Row="2" Name="mediaFileList">
+            <ListBox Grid.Row="2" Name="mediaFileList" PreviewMouseDoubleClick="FileDoubleClick">
+                <ListBox.Resources>
+                    <DataTemplate DataType="{x:Type io:FileInfo}">
+                        <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding Name}" Name="file"/>
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=showFullPath, Path=isChecked}" Value="True">
+                                <Setter TargetName="file" Property="Text" Value="{Binding FullPath}"/>
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </ListBox.Resources>
             </ListBox>
             <DockPanel Grid.Row="3">
                 <Button DockPanel.Dock="Right" x:Name="SaveButton"
