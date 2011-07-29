@@ -26,7 +26,16 @@ namespace BiblioRap
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		public static string[] ScannableExtensions = ("avi" + ',' + "mp3" + ',' + "jpg,jpeg,png,gif,bmp,tiff").Split(',');
+		public static string[] ScannableExtensions = ("avi,mp4,mkv,wmv" + ',' + "mp3,mp2,amr" + ',' + "jpg,jpeg,png,gif,bmp,tiff").Split(',');
+
+		public bool? ShowFullPaths
+		{
+			get { return (bool?)GetValue(ShowFullPathsProperty); }
+			set { SetValue(ShowFullPathsProperty, value); }
+		}
+		// Using a DependencyProperty as the backing store for ShowFullPaths.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty ShowFullPathsProperty =
+			DependencyProperty.Register("ShowFullPaths", typeof(bool?), typeof(MainWindow), new UIPropertyMetadata(false));
 
 		public MainWindow()
 		{
@@ -63,7 +72,7 @@ namespace BiblioRap
 			(new AboutDialog()).ShowDialog();
 		}
 
-        private void ScanButton_Click(object sender, RoutedEventArgs e)
+        private void StartScanButton_Click(object sender, RoutedEventArgs e)
         {
 			string path = ScanDirectory.Text.Trim();
 			bool recursive = isRecursiveScan.IsChecked ?? false;
@@ -89,6 +98,9 @@ namespace BiblioRap
 				scanPath.GetFilesSelectively(recursive, ScanLabel, ScanProgressBar, mediaFileList, ScannableExtensions);
 			}
         }
+		private void StopScanButton_Click(object sender, RoutedEventArgs e)
+		{
+		}
 		private void SaveButton_Click(object sender, RoutedEventArgs e)
 		{
 			SaveFileDialog sfDlg = new SaveFileDialog();
@@ -154,266 +166,5 @@ namespace BiblioRap
 		}
 	}
 
-	public static class FileScanner
-	{
-
-		public static uint WantedFilesCounter;
-
-		public static void GetFilesSelectively(
-			this DirectoryInfo path,
-			bool scanRecursively,
-			TextBlock statusDisplayer,
-			ProgressBar statusProgress,
-			ListBox statusItems,
-			params string[] extensions)
-		{
-			if (statusProgress != null)
-			{
-				WantedFilesCounter = 0;
-				Thread counter = new Thread(new ThreadStart(delegate()
-				{
-					path.GetFileCountSelectively(true, extensions);
-				}));
-				counter.Name = "File counting thread";
-				counter.Start();
-				counter.Join();
-			}
-
-			statusProgress.Dispatcher.BeginInvoke(new Action(delegate()
-			{
-				statusProgress.Maximum = WantedFilesCounter;
-			}));
-			Thread.Sleep(5);
-
-			WantedFilesCounter = 0;
-
-			Thread scanner = new Thread(new ThreadStart(delegate()
-			{
-				path._GetFilesSelectively(scanRecursively, statusDisplayer, statusProgress, statusItems, extensions);
-			}));
-			scanner.Name = "File scanning thread";
-			scanner.Start();
-		}
-		public static void _GetFilesSelectively(
-			this DirectoryInfo path,
-			bool scanRecursively,
-			TextBlock statusDisplayer,
-			ProgressBar statusProgress,
-			ListBox statusItems,
-			params string[] extensions)
-		{
-			FileInfo[] allFiles;
-			try
-			{
-				allFiles = path.GetFiles();
-			}
-			catch (Exception ex)
-			{
-				if (ex is UnauthorizedAccessException || ex is IOException || ex is SecurityException)
-					return;
-				throw;
-			}
-
-			var files = new List<FileInfo>();
-			foreach (FileInfo file in allFiles)
-			{
-				// If the file's type is among the wanted ones :
-				if (extensions.Contains(file.Extension.Replace(".", "")))
-				{
-					WantedFilesCounter++;
-
-					if (statusProgress != null)
-					{
-						statusProgress.Dispatcher.BeginInvoke(
-							DispatcherPriority.Normal,
-							new Action(
-								delegate()
-								{
-									statusProgress.Value = WantedFilesCounter;
-								}
-						));
-					}
-
-					files.Add(file);
-
-					if (statusDisplayer != null)
-					{
-						statusDisplayer.Dispatcher.BeginInvoke(
-							DispatcherPriority.Normal,
-							new Action(
-								delegate()
-								{
-									statusDisplayer.Text = file.FullName;
-								}
-						));
-					}
-					Thread.Sleep(5);
-				}
-			}
-			statusItems.Dispatcher.BeginInvoke(
-				DispatcherPriority.Normal,
-				new Action(
-					delegate()
-					{
-						foreach (FileInfo item in files)
-							statusItems.Items.Add(item);
-					}
-			));
-			Thread.Sleep(5);
-
-			if (scanRecursively)
-				foreach (DirectoryInfo directory in path.GetDirectories())
-					directory._GetFilesSelectively(true, statusDisplayer, statusProgress, statusItems, extensions);
-		}
-
-
-		public static List<string> GetFilesSelectivelyFromDirectory(string path, bool scanRecursively, params string[] extensions)
-		{
-			List<string> files = new List<string>();
-			bool isAppropriate;
-
-			string[] allFiles;
-			try
-			{
-				allFiles = Directory.GetFiles(path);
-			}
-			catch (Exception ex)
-			{
-				if (ex is UnauthorizedAccessException || ex is IOException || ex is SecurityException)
-					return new List<string>();
-				throw;
-			}
-
-			foreach (string file in allFiles)
-			{
-				isAppropriate = false;
-				foreach (string extension in extensions)
-					if (file.EndsWith("." + extension, true, System.Globalization.CultureInfo.InvariantCulture))
-					{
-						isAppropriate = true;
-						break;
-					}
-				if (isAppropriate)
-					files.Add(file);
-			}
-
-			if (scanRecursively)
-				foreach (string directory in Directory.GetDirectories(path))
-					files.AddRange(GetFilesSelectivelyFromDirectory(directory, true, extensions));
-
-			return files;
-		}
-		public static List<FileInfo> GetFilesSelectivelyFromDirectory(DirectoryInfo path, bool scanRecursively, params string[] extensions)
-		{
-			List<FileInfo> files = new List<FileInfo>();
-
-			FileInfo[] allFiles;
-			try
-			{
-				allFiles = path.GetFiles();
-			}
-			catch (Exception ex)
-			{
-				if (ex is UnauthorizedAccessException || ex is IOException || ex is SecurityException)
-					return new List<FileInfo>();
-				throw;
-			}
-
-			foreach (FileInfo file in allFiles)
-				if (extensions.Contains(file.Extension.Replace(".", "")))
-					files.Add(file);
-
-			if (scanRecursively)
-				foreach (DirectoryInfo directory in path.GetDirectories())
-					files.AddRange(GetFilesSelectivelyFromDirectory(directory, true, extensions));
-
-			return files;
-		}
-
-		public static void GetFileCountSelectively(this DirectoryInfo path, bool scanRecursively, params string[] extensions)
-		{
-			FileInfo[] allFiles;
-			try
-			{
-				allFiles = path.GetFiles();
-			}
-			catch (Exception ex)
-			{
-				if (ex is UnauthorizedAccessException || ex is IOException || ex is SecurityException)
-					return;
-				throw;
-			}
-
-			foreach (FileInfo file in allFiles)
-				if (extensions.Contains(file.Extension.Replace(".", "")))
-					WantedFilesCounter++;
-
-			if (scanRecursively)
-				foreach (DirectoryInfo directory in path.GetDirectories())
-					directory.GetFileCountSelectively(true, extensions);
-		}
-
-		public static uint GetFileCountSelectivelyFromDirectory(string path, bool scanRecursively, params string[] extensions)
-		{
-			uint fileCount = 0;
-			bool isAppropriate;
-
-			string[] allFiles;
-			try
-			{
-				allFiles = Directory.GetFiles(path);
-			}
-			catch (Exception ex)
-			{
-				if (ex is UnauthorizedAccessException || ex is IOException || ex is SecurityException)
-					return 0;
-				throw;
-			}
-
-			foreach (string file in allFiles)
-			{
-				isAppropriate = false;
-				foreach (string extension in extensions)
-					if (file.EndsWith("." + extension, true, System.Globalization.CultureInfo.InvariantCulture))
-					{
-						isAppropriate = true;
-						break;
-					}
-				if (isAppropriate)
-					fileCount++;
-			}
-
-			if (scanRecursively)
-				foreach (string directory in Directory.GetDirectories(path))
-					fileCount += GetFileCountSelectivelyFromDirectory(directory, true, extensions);
-
-			return fileCount;
-		}
-		public static uint GetFileCountSelectivelyFromDirectory(DirectoryInfo path, bool scanRecursively, params string[] extensions)
-		{
-			uint fileCount = 0;
-
-			FileInfo[] allFiles;
-			try
-			{
-				allFiles = path.GetFiles();
-			}
-			catch (Exception ex)
-			{
-				if (ex is UnauthorizedAccessException || ex is IOException || ex is SecurityException)
-					return 0;
-				throw;
-			}
-
-			foreach (FileInfo file in allFiles)
-				if (extensions.Contains(file.Extension.Replace(".", "")))
-					fileCount++;
-
-			if (scanRecursively)
-				foreach (DirectoryInfo directory in path.GetDirectories())
-					fileCount += GetFileCountSelectivelyFromDirectory(directory, true, extensions);
-
-			return fileCount;
-		}
-	}
+	
 }

@@ -5,6 +5,7 @@
         xmlns:system="clr-namespace=System;assembly=mscorlib"
         xmlns:io="clr-namespace:System.IO;assembly=mscorlib"
         MinHeight="200" MinWidth="400"
+        Name="mainWin"
         >
     <Window.CommandBindings>
         <CommandBinding Command="Help"
@@ -87,30 +88,41 @@
                     </Style>
                 </StackPanel.Resources>
                 <CheckBox Name="isRecursiveScan" IsChecked="True">Scan recursively</CheckBox>
-                <CheckBox Name="showFullPath">Show full paths</CheckBox>
+                <CheckBox Name="showFullPath" IsChecked="{Binding ElementName=mainWin, Path=ShowFullPaths, Mode=TwoWay}">Show full paths</CheckBox>
             </StackPanel>
             <ListBox Grid.Row="2" Name="mediaFileList" PreviewMouseDoubleClick="FileDoubleClick">
                 <ListBox.Resources>
                     <DataTemplate DataType="{x:Type io:FileInfo}">
                         <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding Name}" Name="file"/>
                         <DataTemplate.Triggers>
-                            <DataTrigger Binding="{Binding ElementName=showFullPath, Path=isChecked}" Value="True">
-                                <Setter TargetName="file" Property="Text" Value="{Binding FullPath}"/>
+                            <DataTrigger Binding="{Binding ElementName=mainWin, Path=ShowFullPaths}" Value="True">
+                                <Setter TargetName="file" Property="Text" Value="{Binding FullName}"/>
                             </DataTrigger>
                         </DataTemplate.Triggers>
                     </DataTemplate>
                 </ListBox.Resources>
             </ListBox>
             <DockPanel Grid.Row="3">
+                <DockPanel.Resources>
+                    <Style TargetType="Button">
+                        <Setter Property="Margin" Value="2,5,2,5"/>
+                    </Style>
+                </DockPanel.Resources>
                 <Button DockPanel.Dock="Right" x:Name="SaveButton"
-                        Click="SaveButton_Click" Margin="5">
+                        Click="SaveButton_Click">
                         Save filenames
                 </Button>
-                <Button Name="ScanButton"
-                        Click="ScanButton_Click" Margin="5">
-                    Start Scan
-                </Button>
-        </DockPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Button Name="StartScanButton"
+                            Click="StartScanButton_Click">
+                        Start Scan
+                    </Button>
+                    <Button Name="StopScanButton"
+                            Click="StopScanButton_Click">
+                        Stop Scan
+                    </Button>
+                </StackPanel>
+            </DockPanel>
     </Grid>
     </DockPanel>
 </Window>
