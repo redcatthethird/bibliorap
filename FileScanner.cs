@@ -15,10 +15,66 @@ namespace BiblioRap
 	{
 		static Thread counter = null;
 		static Thread scanner = null;
+		static Thread intermediate = null;
 
 		public static int WantedDirectoriesCounter;
 		public static uint WantedFilesCounter;
 
+
+		public static void GetAllFilesSelectively(
+			bool scanRecursively,
+			TextBlock statusDisplayer,
+			ProgressBar statusProgress,
+			ListBox statusItems,
+			params string[] extensions)
+		{
+			string[] driveStrings = Directory.GetLogicalDrives();
+			int len = driveStrings.Length;
+			DirectoryInfo[] drives = new DirectoryInfo[len];
+			for (int i = 0; i < len; i++)
+			{
+				drives[i] = new DirectoryInfo(driveStrings[i]);
+			}
+
+			if (statusProgress != null)
+			{
+				WantedDirectoriesCounter = 0;
+
+				foreach (DirectoryInfo drive in drives)
+				{
+					counter = new Thread(new ThreadStart(delegate()
+					{
+						drive.GetDirectoryCount(extensions);
+					}));
+					counter.Name = "Directory counting thread";
+					counter.IsBackground = true;
+					counter.Start();
+					counter.Join();
+				}
+
+				statusProgress.Dispatcher.BeginInvoke(UpdateProgress, statusProgress, WantedDirectoriesCounter, UpdateProgressType.ProgressMaximum);
+
+				WantedDirectoriesCounter = 0;
+			}
+
+			intermediate = new Thread(new ThreadStart(() =>
+			{
+				foreach (DirectoryInfo drive in drives)
+				{
+					scanner = new Thread(new ThreadStart(delegate()
+					{
+						drive._GetFilesSelectively(scanRecursively, statusDisplayer, statusProgress, statusItems, extensions);
+					}));
+					scanner.Name = "File scanning thread";
+					scanner.IsBackground = true;
+					scanner.Start();
+					scanner.Join();
+				}
+			}));
+			intermediate.Name = "Intermediate thread starting thread";
+			intermediate.IsBackground = true;
+			intermediate.Start();
+		}
 		public static void GetFilesSelectively(
 			this DirectoryInfo path,
 			bool scanRecursively,
@@ -84,10 +140,10 @@ namespace BiblioRap
 				if (extensions.Contains(file.Extension.Replace(".", "").ToLowerInvariant()))
 				{
 					if (statusDisplayer != null)
-						statusProgress.Dispatcher.BeginInvoke(UpdateProgress, statusDisplayer, file.FullName, UpdateProgressType.TextBlockText);
+						statusDisplayer.Dispatcher.BeginInvoke(UpdateProgress, statusDisplayer, file.FullName, UpdateProgressType.TextBlockText);
 
-					statusProgress.Dispatcher.BeginInvoke(UpdateProgress, statusItems, file, UpdateProgressType.ListBoxItems);
-					Thread.Sleep(1);
+					statusItems.Dispatcher.BeginInvoke(UpdateProgress, statusItems, file, UpdateProgressType.ListBoxItems);
+					Thread.Sleep(0);
 				}
 			}
 
@@ -244,10 +300,7 @@ namespace BiblioRap
 					case UpdateProgressType.ListBoxItems:
 						if (value is IEnumerable<object>)
 						{
-							foreach (object item in (IEnumerable<object>)value)
-							{
-								((ListBox)progressDisplayer).Items.Add(item);
-							}
+							((ListBox)progressDisplayer).Items.Add((IEnumerable<object>)value);
 						}
 						else
 						{
@@ -300,10 +353,20 @@ namespace BiblioRap
 			{
 				counter.Abort();
 			}
-			if (counter != null && scanner.IsAlive && scanner.ThreadState != ThreadState.AbortRequested)
+			if (scanner != null && scanner.IsAlive && scanner.ThreadState != ThreadState.AbortRequested)
 			{
 				scanner.Abort();
 			}
+			if (intermediate != null && intermediate.IsAlive && intermediate.ThreadState != ThreadState.AbortRequested)
+			{
+				intermediate.Abort();
+			}
+		}
+
+		public static void Add<T>(this ItemCollection target, IEnumerable<T> source)
+		{
+			foreach (T item in source)
+				target.Add(item);
 		}
 	}
 }
