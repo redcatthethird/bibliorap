@@ -13,6 +13,9 @@ namespace BiblioRap
 {
 	public static class FileScanner
 	{
+		static Thread counter = null;
+		static Thread scanner = null;
+
 		public static int WantedDirectoriesCounter;
 		public static uint WantedFilesCounter;
 
@@ -27,11 +30,12 @@ namespace BiblioRap
 			if (statusProgress != null)
 			{
 				WantedDirectoriesCounter = 0;
-				Thread counter = new Thread(new ThreadStart(delegate()
+				counter = new Thread(new ThreadStart(delegate()
 				{
 					path.GetDirectoryCount(extensions);
 				}));
 				counter.Name = "Directory counting thread";
+				counter.IsBackground = true;
 				counter.Start();
 				counter.Join();
 
@@ -40,14 +44,15 @@ namespace BiblioRap
 				WantedDirectoriesCounter = 0;
 			}
 
-			Thread scanner = new Thread(new ThreadStart(delegate()
+			scanner = new Thread(new ThreadStart(delegate()
 			{
 				path._GetFilesSelectively(scanRecursively, statusDisplayer, statusProgress, statusItems, extensions);
 			}));
 			scanner.Name = "File scanning thread";
+			scanner.IsBackground = true;
 			scanner.Start();
 		}
-		public static void _GetFilesSelectively(
+		static void _GetFilesSelectively(
 			this DirectoryInfo path,
 			bool scanRecursively,
 			TextBlock statusDisplayer,
@@ -214,14 +219,14 @@ namespace BiblioRap
 		/// <param name="progressDisplayer">The object that can display progress.</param>
 		/// <param name="value">The value to be assigned to the object.</param>
 		/// <param name="action">Determining what to do by means of a switch statement.</param>
-		public delegate void UpdateProgressHandler(DispatcherObject progressDisplayer, object value, UpdateProgressType action);
+		delegate void UpdateProgressHandler(DispatcherObject progressDisplayer, object value, UpdateProgressType action);
 		/// <summary>
 		/// A method for the updating of any object that can display progress somehow.
 		/// </summary>
 		/// <param name="progressDisplayer">The object that can display progress.</param>
 		/// <param name="value">The value to be assigned to the object.</param>
 		/// <param name="action">A UpdateProgressType for deciding on a situation.</param>
-		public static void UpdateProgressMethod(DispatcherObject progressDisplayer, object value, UpdateProgressType action)
+		static void UpdateProgressMethod(DispatcherObject progressDisplayer, object value, UpdateProgressType action)
 		{
 			try
 			{
@@ -265,10 +270,11 @@ namespace BiblioRap
 					MessageBoxOptions.ServiceNotification);
 			}
 		}
+		static UpdateProgressHandler UpdateProgress = new UpdateProgressHandler(UpdateProgressMethod);
 		/// <summary>
 		/// A enumeration for describing the type of progress update to be done.
 		/// </summary>
-		public enum UpdateProgressType
+		enum UpdateProgressType
 		{
 			/// <summary>
 			/// Updates the Maximum property of a ProgressBar.
@@ -288,6 +294,16 @@ namespace BiblioRap
 			ListBoxItems
 		}
 
-		public static UpdateProgressHandler UpdateProgress = new UpdateProgressHandler(UpdateProgressMethod);
+		public static void Abort()
+		{
+			if (counter != null && counter.IsAlive && counter.ThreadState != ThreadState.AbortRequested)
+			{
+				counter.Abort();
+			}
+			if (counter != null && scanner.IsAlive && scanner.ThreadState != ThreadState.AbortRequested)
+			{
+				scanner.Abort();
+			}
+		}
 	}
 }
