@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security;
+using System.Threading;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Threading;
-using System.Threading;
-using System.IO;
-using System.Security;
 
 namespace BiblioRap
 {
@@ -28,20 +29,16 @@ namespace BiblioRap
 				WantedDirectoriesCounter = 0;
 				Thread counter = new Thread(new ThreadStart(delegate()
 				{
-					path.GetDirectoryCount( extensions);
+					path.GetDirectoryCount(extensions);
 				}));
 				counter.Name = "Directory counting thread";
 				counter.Start();
 				counter.Join();
+
+				statusProgress.Dispatcher.BeginInvoke(UpdateProgress, statusProgress, WantedDirectoriesCounter, UpdateProgressType.ProgressMaximum);
+
+				WantedDirectoriesCounter = 0;
 			}
-
-			statusProgress.Dispatcher.BeginInvoke(new Action(delegate()
-			{
-				statusProgress.Maximum = WantedDirectoriesCounter;
-			}));
-			Thread.Sleep(4);
-
-			WantedDirectoriesCounter = 0;
 
 			Thread scanner = new Thread(new ThreadStart(delegate()
 			{
@@ -73,48 +70,21 @@ namespace BiblioRap
 			if (statusProgress != null)
 			{
 				WantedDirectoriesCounter++;
-				statusProgress.Dispatcher.BeginInvoke(
-					DispatcherPriority.Normal,
-					new Action(
-						delegate()
-						{
-							statusProgress.Value = WantedDirectoriesCounter;
-						}
-				));
+				statusProgress.Dispatcher.BeginInvoke(UpdateProgress, statusProgress, WantedDirectoriesCounter, UpdateProgressType.ProgressValue);
 			}
 
-			var files = new List<FileInfo>();
 			foreach (FileInfo file in allFiles)
 			{
 				// If the file's type is among the wanted ones :
 				if (extensions.Contains(file.Extension.Replace(".", "").ToLowerInvariant()))
 				{
-					files.Add(file);
-
 					if (statusDisplayer != null)
-					{
-						statusDisplayer.Dispatcher.BeginInvoke(
-							DispatcherPriority.Normal,
-							new Action(
-								delegate()
-								{
-									statusDisplayer.Text = file.FullName;
-								}
-						));
-					}
-					Thread.Sleep(4);
+						statusProgress.Dispatcher.BeginInvoke(UpdateProgress, statusDisplayer, file.FullName, UpdateProgressType.TextBlockText);
+
+					statusProgress.Dispatcher.BeginInvoke(UpdateProgress, statusItems, file, UpdateProgressType.ListBoxItems);
+					Thread.Sleep(1);
 				}
 			}
-			statusItems.Dispatcher.BeginInvoke(
-				DispatcherPriority.Normal,
-				new Action(
-					delegate()
-					{
-						foreach (FileInfo item in files)
-							statusItems.Items.Add(item);
-					}
-			));
-			Thread.Sleep(5);
 
 			if (scanRecursively)
 				foreach (DirectoryInfo directory in path.GetDirectories())
@@ -237,5 +207,87 @@ namespace BiblioRap
 
 			return fileCount;
 		}
+
+		/// <summary>
+		/// A handler for the updating of any object that can display progress somehow.
+		/// </summary>
+		/// <param name="progressDisplayer">The object that can display progress.</param>
+		/// <param name="value">The value to be assigned to the object.</param>
+		/// <param name="action">Determining what to do by means of a switch statement.</param>
+		public delegate void UpdateProgressHandler(DispatcherObject progressDisplayer, object value, UpdateProgressType action);
+		/// <summary>
+		/// A method for the updating of any object that can display progress somehow.
+		/// </summary>
+		/// <param name="progressDisplayer">The object that can display progress.</param>
+		/// <param name="value">The value to be assigned to the object.</param>
+		/// <param name="action">A UpdateProgressType for deciding on a situation.</param>
+		public static void UpdateProgressMethod(DispatcherObject progressDisplayer, object value, UpdateProgressType action)
+		{
+			try
+			{
+				switch (action)
+				{
+					case UpdateProgressType.ProgressMaximum:
+						((ProgressBar)progressDisplayer).Maximum = (int)value;
+						break;
+					case UpdateProgressType.ProgressValue:
+						((ProgressBar)progressDisplayer).Value = (int)value;
+						break;
+					case UpdateProgressType.TextBlockText:
+						((TextBlock)progressDisplayer).Text = (string)value;
+						break;
+					case UpdateProgressType.ListBoxItems:
+						if (value is IEnumerable<object>)
+						{
+							foreach (object item in (IEnumerable<object>)value)
+							{
+								((ListBox)progressDisplayer).Items.Add(item);
+							}
+						}
+						else
+						{
+							((ListBox)progressDisplayer).Items.Add(value);
+						}
+						break;
+					default:
+						break;
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(
+					"Something went wrong here, in the UpdateProgress method. Not cool, dude, not cool at all.\n" +
+					ex.Message,
+					ex.InnerException.Message,
+					MessageBoxButton.OK,
+					MessageBoxImage.Error,
+					MessageBoxResult.OK,
+					MessageBoxOptions.ServiceNotification);
+			}
+		}
+		/// <summary>
+		/// A enumeration for describing the type of progress update to be done.
+		/// </summary>
+		public enum UpdateProgressType
+		{
+			/// <summary>
+			/// Updates the Maximum property of a ProgressBar.
+			/// </summary>
+			ProgressMaximum,
+			/// <summary>
+			/// Updates the Value property of a ProgressBar.
+			/// </summary>
+			ProgressValue,
+			/// <summary>
+			/// Updates the Text property of a TextBlock.
+			/// </summary>
+			TextBlockText,
+			/// <summary>
+			/// Adds to the Items property of a ListBox.
+			/// </summary>
+			ListBoxItems
+		}
+
+		public static UpdateProgressHandler UpdateProgress = new UpdateProgressHandler(UpdateProgressMethod);
 	}
 }
