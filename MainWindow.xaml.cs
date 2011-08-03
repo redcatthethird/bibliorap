@@ -78,13 +78,10 @@ namespace BiblioRap
 
 			string path = ScanDirectory.Text.Trim();
 			bool recursive = isRecursiveScan.IsChecked ?? false;
+			bool counting = countFiles.IsChecked ?? false;
 			if (path == "*")
 			{
-				string[] drives = Directory.GetLogicalDrives();
-				foreach (string drive in drives)
-				{
-					(new DirectoryInfo(drive)).GetFilesSelectively(recursive, ScanLabel, ScanProgressBar, mediaFileList, ScannableExtensions);
-				}
+				FileScanner.GetAllFilesSelectively(recursive, ScanLabel, counting ? ScanProgressBar : null, mediaFileList, ScannableExtensions);
 			}
 			else
 			{
@@ -97,7 +94,7 @@ namespace BiblioRap
 				}
 
 				mediaFileList.Items.Clear();
-				scanPath.GetFilesSelectively(recursive, ScanLabel, ScanProgressBar, mediaFileList, ScannableExtensions);
+				scanPath.GetFilesSelectively(recursive, ScanLabel, counting ? ScanProgressBar : null, mediaFileList, ScannableExtensions);
 			}
         }
 		private void StopScanButton_Click(object sender, RoutedEventArgs e)
@@ -161,13 +158,5 @@ namespace BiblioRap
 		{
 			elem.Dispatcher.Invoke(EmptyDelegate, DispatcherPriority.Render);
 		}
-
-		public static void Add<T>(this ItemCollection target, IEnumerable<T> source)
-		{
-			foreach (T item in source)
-				target.Add(item);
-		}
 	}
-
-	
 }
