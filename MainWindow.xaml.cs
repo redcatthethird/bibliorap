@@ -74,6 +74,8 @@ namespace BiblioRap
 
         private void StartScanButton_Click(object sender, RoutedEventArgs e)
         {
+			FileScanner.Abort();
+
 			string path = ScanDirectory.Text.Trim();
 			bool recursive = isRecursiveScan.IsChecked ?? false;
 			if (path == "*")
@@ -100,6 +102,7 @@ namespace BiblioRap
         }
 		private void StopScanButton_Click(object sender, RoutedEventArgs e)
 		{
+			FileScanner.Abort();
 		}
 		private void SaveButton_Click(object sender, RoutedEventArgs e)
 		{
