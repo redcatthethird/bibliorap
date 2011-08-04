@@ -26,6 +26,7 @@ namespace BiblioRap
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		List<FileInfo> fileList = null;
 		public static string[] ScannableExtensions = ("avi,mp4,mkv,wmv" + ',' + "mp3,mp2,amr" + ',' + "jpg,jpeg,png,gif,bmp,tiff").Split(',');
 
 		public bool? ShowFullPaths
@@ -36,7 +37,7 @@ namespace BiblioRap
 		// Using a DependencyProperty as the backing store for ShowFullPaths.  This enables animation, styling, binding, etc...
 		public static readonly DependencyProperty ShowFullPathsProperty =
 			DependencyProperty.Register("ShowFullPaths", typeof(bool?), typeof(MainWindow), new UIPropertyMetadata(false));
-
+		
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -75,6 +76,8 @@ namespace BiblioRap
         private void StartScanButton_Click(object sender, RoutedEventArgs e)
         {
 			FileScanner.Abort();
+			fileList = null;
+			filterBox.Text = "";
 
 			string path = ScanDirectory.Text.Trim();
 			bool recursive = isRecursiveScan.IsChecked ?? false;
@@ -149,6 +152,37 @@ namespace BiblioRap
 				Process.Start((file as FileInfo).FullName);
 			}
 		}
+
+		private void filterBox_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			FileScanner.Abort();
+
+			// If items not saved yet, do so.
+			if (fileList == null)
+			{
+				int count = mediaFileList.Items.Count;
+				fileList = new List<FileInfo>(count);
+				for (int i = 0; i < count; i++)
+				{
+					fileList.Add(mediaFileList.Items[i] as FileInfo);
+				}
+			}
+
+			// Clear the displayed filelist and add only the files that contain the filter.
+			mediaFileList.Items.Clear();
+			string filter = filterBox.Text.Trim();
+			string name;
+			foreach (FileInfo file in fileList)
+			{
+				if (ShowFullPaths ?? false)
+					name = file.FullName;
+				else
+					name = file.Name;
+
+				if (filter.IsNullOrEmpty() || name.Contains(filter))
+					mediaFileList.Items.Add(file);
+			}
+		}
 	}
 
 	public static class ExtensionMethods
@@ -157,6 +191,66 @@ namespace BiblioRap
 		public static void Refresh(this UIElement elem)
 		{
 			elem.Dispatcher.Invoke(EmptyDelegate, DispatcherPriority.Render);
+		}
+
+		public static bool IsNullOrEmpty(this string str)
+		{
+			return str == null || str.Length == 0;
+		}
+	}
+
+	public static class VisualTraverser
+	{
+		public static Child GetFirstChild<Child>(DependencyObject list)
+			where Child : DependencyObject
+		{
+			DependencyObject candidate = null;
+			for (int i = 0; i < VisualTreeHelper.GetChildrenCount(list); i++)
+			{
+				candidate = VisualTreeHelper.GetChild(list, i);
+				if (candidate is Child)
+					break;
+			}
+			if (!(candidate is Child))
+				for (int i = 0; i < VisualTreeHelper.GetChildrenCount(list); i++)
+				{
+					candidate = VisualTreeHelper.GetChild(list, i);
+					candidate = GetFirstChild<Child>(candidate);
+					if (candidate is Child)
+						break;
+				}
+			return candidate as Child;
+		}
+		public static Child FirstChild<Child>(this DependencyObject list)
+			where Child : DependencyObject
+		{
+			DependencyObject candidate = null;
+			for (int i = 0; i < VisualTreeHelper.GetChildrenCount(list); i++)
+			{
+				candidate = VisualTreeHelper.GetChild(list, i);
+				if (candidate is Child)
+					break;
+			}
+			if (!(candidate is Child))
+				for (int i = 0; i < VisualTreeHelper.GetChildrenCount(list); i++)
+				{
+					candidate = VisualTreeHelper.GetChild(list, i);
+					candidate = GetFirstChild<Child>(candidate);
+					if (candidate is Child)
+						break;
+				}
+			return candidate as Child;
+		}
+
+		// Important: Here I assume the ListBoxItem contains a single TextBlock.
+		public static string GetItemString(ListBoxItem item)
+		{
+			return GetFirstChild<TextBlock>(item).Text;
+		}
+		// Important: Here too I assume the ListBoxItem contains a single TextBlock.
+		public static string ItemString(this ListBoxItem item)
+		{
+			return GetFirstChild<TextBlock>(item).Text;
 		}
 	}
 }

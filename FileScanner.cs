@@ -20,7 +20,6 @@ namespace BiblioRap
 		public static int WantedDirectoriesCounter;
 		public static uint WantedFilesCounter;
 
-
 		public static void GetAllFilesSelectively(
 			bool scanRecursively,
 			TextBlock statusDisplayer,
