@@ -4,7 +4,7 @@
         xmlns:local="clr-namespace:BiblioRap"
         xmlns:io="clr-namespace:System.IO;assembly=mscorlib"
         MinHeight="200" MinWidth="400"
-        Name="mainWin"
+        Name="mainWin" Title="BiblioRap"
         >
     <Window.CommandBindings>
         <CommandBinding Command="Help"
@@ -12,6 +12,12 @@
         <CommandBinding Command="Close"
                         CanExecute="CloseCanExecute" Executed="CloseHasExecuted"/>
     </Window.CommandBindings>
+    <Window.Resources>
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </Window.Resources>
+    
     <DockPanel>
         <Menu DockPanel.Dock="Top" IsMainMenu="True">
             <Menu.Background>
@@ -75,22 +81,35 @@
         		    <GradientStop Color="#FF31D9E5" Offset="0.496"/>
         	    </LinearGradientBrush>
             </Grid.Background>
+            
             <DockPanel Grid.Row="0">
                 <Label DockPanel.Dock="Left" VerticalAlignment="Center">Folder to scan:</Label>
                 <Button DockPanel.Dock="Right" Name="BrowseButton" Click="BrowseButton_Click">Browse</Button>
                 <TextBox Name="ScanDirectory" Text="J:" />
             </DockPanel>
-            <StackPanel Grid.Row="1" Orientation="Horizontal" Height="20">
-                <StackPanel.Resources>
+            
+            <DockPanel Grid.Row="1">
+                <DockPanel.Resources>
                     <Style TargetType="{x:Type CheckBox}">
                         <Setter Property="VerticalAlignment" Value="Center"/>
                         <Setter Property="Margin" Value="0,0,10,0"/>
                     </Style>
-                </StackPanel.Resources>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                        <Setter Property="Margin" Value="0,0,5,0"/>
+                    </Style>
+                </DockPanel.Resources>
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                    <TextBlock>Filter:</TextBlock>
+                    <TextBox Width="100px" Name="filterBox" TextChanged="filterBox_TextChanged"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Height="20">
                 <CheckBox Name="isRecursiveScan" IsChecked="True">Scan recursively</CheckBox>
                 <CheckBox Name="showFullPath" IsChecked="{Binding ElementName=mainWin, Path=ShowFullPaths, Mode=TwoWay}">Show full paths</CheckBox>
                 <CheckBox Name="countFiles" IsChecked="True">Count files</CheckBox>
             </StackPanel>
+            </DockPanel>
+            
             <ListBox Grid.Row="2" Name="mediaFileList" PreviewMouseDoubleClick="FileDoubleClick">
                 <ListBox.Resources>
                     <DataTemplate DataType="{x:Type io:FileInfo}">
@@ -103,6 +122,7 @@
                     </DataTemplate>
                 </ListBox.Resources>
             </ListBox>
+            
             <DockPanel Grid.Row="3">
                 <DockPanel.Resources>
                     <Style TargetType="Button">
@@ -124,6 +144,7 @@
                     </Button>
                 </StackPanel>
             </DockPanel>
+            
     </Grid>
     </DockPanel>
 </Window>
