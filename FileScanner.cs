@@ -24,7 +24,7 @@ namespace BiblioRap
 			bool scanRecursively,
 			TextBlock statusDisplayer,
 			ProgressBar statusProgress,
-			ListBox statusItems,
+			ItemsControl statusItems,
 			params string[] extensions)
 		{
 			string[] driveStrings = Directory.GetLogicalDrives();
@@ -79,7 +79,7 @@ namespace BiblioRap
 			bool scanRecursively,
 			TextBlock statusDisplayer,
 			ProgressBar statusProgress,
-			ListBox statusItems,
+			ItemsControl statusItems,
 			params string[] extensions)
 		{
 			if (statusProgress != null)
@@ -112,7 +112,7 @@ namespace BiblioRap
 			bool scanRecursively,
 			TextBlock statusDisplayer,
 			ProgressBar statusProgress,
-			ListBox statusItems,
+			ItemsControl statusItems,
 			params string[] extensions)
 		{
 			FileInfo[] allFiles;
@@ -141,7 +141,7 @@ namespace BiblioRap
 					if (statusDisplayer != null)
 						statusDisplayer.Dispatcher.BeginInvoke(UpdateProgress, statusDisplayer, file.FullName, UpdateProgressType.TextBlockText);
 
-					statusItems.Dispatcher.BeginInvoke(UpdateProgress, statusItems, file, UpdateProgressType.ListBoxItems);
+					statusItems.Dispatcher.BeginInvoke(UpdateProgress, statusItems, new TFileInfo(file), UpdateProgressType.ListBoxItems);
 					Thread.Sleep(0);
 				}
 			}
@@ -298,13 +298,9 @@ namespace BiblioRap
 						break;
 					case UpdateProgressType.ListBoxItems:
 						if (value is IEnumerable<object>)
-						{
 							((ListBox)progressDisplayer).Items.Add((IEnumerable<object>)value);
-						}
 						else
-						{
 							((ListBox)progressDisplayer).Items.Add(value);
-						}
 						break;
 					default:
 						break;
