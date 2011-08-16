@@ -118,13 +118,19 @@
                 </ListBox.ItemsPanel>
                 <ListBox.Resources>
                     <DataTemplate DataType="{x:Type local:TFileInfo}">
-                        <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding Name}" Name="file" HorizontalAlignment="Center"/>
+                        <DockPanel Width="128">
+                            <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding Name}" Name="file"
+                                       DockPanel.Dock="Bottom" HorizontalAlignment="Center" Width="128"/>
+                            <Image Source="{Binding Thumbnail}" Width="128"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </DockPanel>
                         <DataTemplate.Triggers>
                             <DataTrigger Binding="{Binding ElementName=mainWin, Path=ShowFullPaths}" Value="True">
                                 <Setter TargetName="file" Property="Text" Value="{Binding FullName}"/>
                             </DataTrigger>
                         </DataTemplate.Triggers>
                     </DataTemplate>
+                    
                     <DataTemplate DataType="{x:Type io:FileInfo}">
                         <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding Name}" Name="file" HorizontalAlignment="Center"/>
                         <DataTemplate.Triggers>
@@ -155,6 +161,7 @@
                             Click="StopScanButton_Click">
                         Stop Scan
                     </Button>
+                    <Button Name="Thumbnailer" Click="Thumbnailer_Click">Thumbnail.er</Button>
                 </StackPanel>
             </DockPanel>
             

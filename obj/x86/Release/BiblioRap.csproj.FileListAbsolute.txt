@@ -14,3 +14,12 @@ C:\Users\luciano\Desktop\bibliorap\obj\x86\Release\GenerateResource.read.1.tlog
 C:\Users\luciano\Desktop\bibliorap\obj\x86\Release\GenerateResource.write.1.tlog
 C:\Users\luciano\Desktop\bibliorap\obj\x86\Release\BiblioRap.exe
 C:\Users\luciano\Desktop\bibliorap\obj\x86\Release\BiblioRap.pdb
+C:\Users\luciano\Desktop\bibliorap\obj\x86\Release\GeneratedInternalTypeHelper.g.cs
+C:\Users\luciano\Desktop\bibliorap\bin\Release\Microsoft.WindowsAPICodePack.ExtendedLinguisticServices.dll
+C:\Users\luciano\Desktop\bibliorap\bin\Release\Microsoft.WindowsAPICodePack.Sensors.dll
+C:\Users\luciano\Desktop\bibliorap\bin\Release\Microsoft.WindowsAPICodePack.ShellExtensions.dll
+C:\Users\luciano\Desktop\bibliorap\bin\Release\Microsoft.WindowsAPICodePack.ExtendedLinguisticServices.pdb
+C:\Users\luciano\Desktop\bibliorap\bin\Release\Microsoft.WindowsAPICodePack.Sensors.pdb
+C:\Users\luciano\Desktop\bibliorap\bin\Release\Microsoft.WindowsAPICodePack.ShellExtensions.pdb
+C:\Users\luciano\Desktop\bibliorap\obj\x86\Release\TestPage.baml
+C:\Users\luciano\Desktop\bibliorap\obj\x86\Release\TestPage.g.cs

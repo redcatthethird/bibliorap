@@ -142,7 +142,7 @@ namespace BiblioRap
 						statusDisplayer.Dispatcher.BeginInvoke(UpdateProgress, statusDisplayer, file.FullName, UpdateProgressType.TextBlockText);
 
 					statusItems.Dispatcher.BeginInvoke(UpdateProgress, statusItems, new TFileInfo(file), UpdateProgressType.ListBoxItems);
-					Thread.Sleep(0);
+					Thread.Sleep(6);
 				}
 			}
 
