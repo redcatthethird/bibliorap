@@ -1,7 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Security;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -12,12 +17,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using System.Threading;
-using System.IO;
 using Microsoft.Win32;
 using WF = System.Windows.Forms;
-using System.Diagnostics;
-using System.Security;
+using RMA.Shell;
 
 namespace BiblioRap
 {
@@ -37,7 +39,7 @@ namespace BiblioRap
 		// Using a DependencyProperty as the backing store for ShowFullPaths.  This enables animation, styling, binding, etc...
 		public static readonly DependencyProperty ShowFullPathsProperty =
 			DependencyProperty.Register("ShowFullPaths", typeof(bool?), typeof(MainWindow), new UIPropertyMetadata(false));
-		
+				
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -196,6 +198,16 @@ namespace BiblioRap
 		public static bool IsNullOrEmpty(this string str)
 		{
 			return str == null || str.Length == 0;
+		}
+
+		public static Bitmap GetThumbnail(this FileInfo fi)
+		{
+			Bitmap thumb;
+			using (ShellThumbnail st = new ShellThumbnail())
+			{
+				thumb = st.GetThumbnail(fi.FullName);
+			}
+			return thumb;
 		}
 	}
 

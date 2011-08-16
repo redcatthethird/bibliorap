@@ -110,10 +110,23 @@
             </StackPanel>
             </DockPanel>
             
-            <ListBox Grid.Row="2" Name="mediaFileList" PreviewMouseDoubleClick="FileDoubleClick">
+            <ListBox Grid.Row="2" Name="mediaFileList" MouseDoubleClick="FileDoubleClick" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel IsItemsHost="True"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
                 <ListBox.Resources>
+                    <DataTemplate DataType="{x:Type local:TFileInfo}">
+                        <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding Name}" Name="file" HorizontalAlignment="Center"/>
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=mainWin, Path=ShowFullPaths}" Value="True">
+                                <Setter TargetName="file" Property="Text" Value="{Binding FullName}"/>
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
                     <DataTemplate DataType="{x:Type io:FileInfo}">
-                        <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding Name}" Name="file"/>
+                        <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding Name}" Name="file" HorizontalAlignment="Center"/>
                         <DataTemplate.Triggers>
                             <DataTrigger Binding="{Binding ElementName=mainWin, Path=ShowFullPaths}" Value="True">
                                 <Setter TargetName="file" Property="Text" Value="{Binding FullName}"/>
