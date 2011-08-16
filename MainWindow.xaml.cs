@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Media;
+using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 using System.Threading;
@@ -12,14 +14,15 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using Microsoft.Win32;
-using WF = System.Windows.Forms;
 using RMA.Shell;
+using WF = System.Windows.Forms;
 
 namespace BiblioRap
 {
@@ -153,6 +156,10 @@ namespace BiblioRap
 			{
 				Process.Start((file as FileInfo).FullName);
 			}
+			if (file is TFileInfo)
+			{
+				Process.Start((file as TFileInfo).FullName);
+			}
 		}
 
 		private void filterBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -185,6 +192,15 @@ namespace BiblioRap
 					mediaFileList.Items.Add(file);
 			}
 		}
+
+		private void Thumbnailer_Click(object sender, RoutedEventArgs e)
+		{
+			TFileInfo path = mediaFileList.SelectedItem as TFileInfo;
+			if (path != null)
+			{
+				(new TestPage(path.FullName)).ShowDialog();
+			}
+		}
 	}
 
 	public static class ExtensionMethods
@@ -208,6 +224,29 @@ namespace BiblioRap
 				thumb = st.GetThumbnail(fi.FullName);
 			}
 			return thumb;
+		}
+
+		[DllImport("gdi32", CharSet = CharSet.Auto)]
+		internal extern static int DeleteObject(IntPtr hObject);
+
+		public static BitmapSource ToBitmapSource(this Bitmap bmp)
+		{
+			BitmapSource bs;
+			IntPtr ip = bmp.GetHbitmap();
+			try
+			{
+				bs = Imaging.CreateBitmapSourceFromHBitmap(
+					ip,
+					IntPtr.Zero,
+					Int32Rect.Empty,
+					BitmapSizeOptions.FromEmptyOptions());
+			}
+			finally
+			{
+				DeleteObject(ip);
+			}
+
+			return bs;
 		}
 	}
 
@@ -233,34 +272,9 @@ namespace BiblioRap
 				}
 			return candidate as Child;
 		}
-		public static Child FirstChild<Child>(this DependencyObject list)
-			where Child : DependencyObject
-		{
-			DependencyObject candidate = null;
-			for (int i = 0; i < VisualTreeHelper.GetChildrenCount(list); i++)
-			{
-				candidate = VisualTreeHelper.GetChild(list, i);
-				if (candidate is Child)
-					break;
-			}
-			if (!(candidate is Child))
-				for (int i = 0; i < VisualTreeHelper.GetChildrenCount(list); i++)
-				{
-					candidate = VisualTreeHelper.GetChild(list, i);
-					candidate = GetFirstChild<Child>(candidate);
-					if (candidate is Child)
-						break;
-				}
-			return candidate as Child;
-		}
 
 		// Important: Here I assume the ListBoxItem contains a single TextBlock.
 		public static string GetItemString(ListBoxItem item)
-		{
-			return GetFirstChild<TextBlock>(item).Text;
-		}
-		// Important: Here too I assume the ListBoxItem contains a single TextBlock.
-		public static string ItemString(this ListBoxItem item)
 		{
 			return GetFirstChild<TextBlock>(item).Text;
 		}
