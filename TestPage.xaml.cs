@@ -32,5 +32,11 @@ namespace BiblioRap
 		{
 			Displayer.Source = ShellFile.FromFilePath(fileInfo.FullName).Thumbnail.ExtraLargeBitmapSource;
 		}
+
+		private void Displayer_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			MessageBox.Show("Width = " + Displayer.Source.Width + ", Height = " + Displayer.Source.Height);
+			this.Close();
+		}
 	}
 }

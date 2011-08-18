@@ -1,8 +1,14 @@
 ﻿<Window x:Class="BiblioRap.TestPage"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="TestPage" Height="600" Width="600" Loaded="Window_Loaded">
-    <Grid>
-        <Image Name="Displayer" Width="512"/>
-    </Grid>
+        Title="TestPage" Height="512" Width="768" Loaded="Window_Loaded">
+    <DockPanel>
+        <Button DockPanel.Dock="Left">
+            <Image Width="128" Source="Images\Arrows\left-arrow-128.png"/>
+        </Button>
+        <Button DockPanel.Dock="Right">
+            <Image Width="128" Source="Images\Arrows\right-arrow-128.png"/>
+        </Button>
+        <Image Name="Displayer" Width="512" MouseLeftButtonDown="Displayer_MouseLeftButtonDown"/>
+    </DockPanel>
 </Window>
