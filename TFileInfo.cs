@@ -42,5 +42,14 @@ namespace BiblioRap
 				return _thumbnail;
 			}
 		}
+
+		public static implicit operator FileInfo(TFileInfo fi)
+		{
+			return new FileInfo(fi.FullName);
+		}
+		public static implicit operator TFileInfo(FileInfo fi)
+		{
+			return new TFileInfo(fi);
+		}
 	}
 }
