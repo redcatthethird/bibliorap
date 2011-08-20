@@ -38,6 +38,7 @@ namespace BiblioRap
 			{
 				DisplayModer.Items.Add(size.ToString());
 			}
+			DisplayModer.SelectedIndex = 0;
 		}
 
 		private void Displayer_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -68,9 +69,14 @@ namespace BiblioRap
 				throw new ArgumentNullException(
 					"Something fucked up, the thing selected in the ItemsControl ain't a FileInfo.");
 
-			Displayer.Source = Thumbnail(fileInfo, thumbSize);
+			SetThumbnail(fileInfo);
 
 			this.Title = fileInfo.Name;
+		}
+
+		void SetThumbnail(FileInfo fi)
+		{
+			Displayer.Source = Thumbnail(fi, thumbSize);
 		}
 
 		BitmapSource Thumbnail(FileInfo fi, ThumbnailSize ts)
@@ -88,6 +94,12 @@ namespace BiblioRap
 				default:
 					return ShellFile.FromFilePath(fi.FullName).Thumbnail.LargeBitmapSource;
 			}
+		}
+
+		private void DisplayModer_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			thumbSize = (ThumbnailSize)Enum.Parse(typeof(ThumbnailSize), e.AddedItems[0] as string);
+			Refresh();
 		}
 	}
 

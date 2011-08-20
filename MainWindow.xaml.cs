@@ -252,6 +252,16 @@ namespace BiblioRap
 
 			return bs;
 		}
+
+		public static T Clamp<T>(this T nr, T min, T max)
+			where T : IComparable<T>
+		{
+			if (nr.CompareTo(min) < 0)
+				return min;
+			if (nr.CompareTo(max) > 0)
+				return max;
+			return nr;
+		}
 	}
 
 	public static class VisualTraverser
