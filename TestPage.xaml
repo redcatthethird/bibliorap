@@ -9,7 +9,7 @@
         <Button DockPanel.Dock="Right" Name="Right" Click="Righter_Click">
             <Image Width="128" Source="Images\Arrows\right-arrow-128.png"/>
         </Button>
-        <ComboBox Name="DisplayModer" DockPanel.Dock="Top"/>
+        <ComboBox Name="DisplayModer" DockPanel.Dock="Top" SelectionChanged="DisplayModer_SelectionChanged" />
         
         <Image Name="Displayer" MouseLeftButtonDown="Displayer_MouseLeftButtonDown" Stretch="Uniform"/>
     </DockPanel>
