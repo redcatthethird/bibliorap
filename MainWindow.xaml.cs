@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Media;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
@@ -195,11 +197,7 @@ namespace BiblioRap
 
 		private void Thumbnailer_Click(object sender, RoutedEventArgs e)
 		{
-			TFileInfo path = mediaFileList.SelectedItem as TFileInfo;
-			if (path != null)
-			{
-				(new TestPage(path.FullName)).ShowDialog();
-			}
+			(new TestPage(mediaFileList)).ShowDialog();
 		}
 	}
 
@@ -216,6 +214,12 @@ namespace BiblioRap
 			return str == null || str.Length == 0;
 		}
 
+		/// <summary>
+		/// Returns the Windows-displayed thumbnail of a file described by a FileInfo.
+		/// Using the shell. Windows dll. Supposedly working, but not really.
+		/// </summary>
+		/// <param name="fi">FileInfo specifying the file.</param>
+		/// <returns>Thumbnail of the file.</returns>
 		public static Bitmap GetThumbnail(this FileInfo fi)
 		{
 			Bitmap thumb;

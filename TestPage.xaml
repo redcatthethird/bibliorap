@@ -3,12 +3,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="TestPage" Height="512" Width="768" Loaded="Window_Loaded">
     <DockPanel>
-        <Button DockPanel.Dock="Left">
+        <Button DockPanel.Dock="Left" Name="Lefter" Click="Lefter_Click">
             <Image Width="128" Source="Images\Arrows\left-arrow-128.png"/>
         </Button>
-        <Button DockPanel.Dock="Right">
+        <Button DockPanel.Dock="Right" Name="Right" Click="Righter_Click">
             <Image Width="128" Source="Images\Arrows\right-arrow-128.png"/>
         </Button>
-        <Image Name="Displayer" Width="512" MouseLeftButtonDown="Displayer_MouseLeftButtonDown"/>
+        <ComboBox Name="DisplayModer" DockPanel.Dock="Top"/>
+        
+        <Image Name="Displayer" MouseLeftButtonDown="Displayer_MouseLeftButtonDown" Stretch="Uniform"/>
     </DockPanel>
 </Window>

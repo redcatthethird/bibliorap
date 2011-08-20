@@ -20,23 +20,82 @@ namespace BiblioRap
 	/// </summary>
 	public partial class TestPage : Window
 	{
-		private FileInfo fileInfo;
+		private ListBox refList = null;
+		private int index = -1;
+		private ThumbnailSize thumbSize = ThumbnailSize.ExtraLarge;
 
-		public TestPage(string Path)
+		public TestPage(ListBox lBox)
 		{
+			refList = lBox;
 			InitializeComponent();
-			fileInfo = new FileInfo(Path);
 		}
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
-			Displayer.Source = ShellFile.FromFilePath(fileInfo.FullName).Thumbnail.ExtraLargeBitmapSource;
+			index = refList.SelectedIndex;
+			Refresh();
+			foreach (ThumbnailSize size in Enum.GetValues(typeof(ThumbnailSize)))
+			{
+				DisplayModer.Items.Add(size.ToString());
+			}
 		}
 
 		private void Displayer_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
 		{
 			MessageBox.Show("Width = " + Displayer.Source.Width + ", Height = " + Displayer.Source.Height);
-			this.Close();
 		}
+
+		private void Lefter_Click(object sender, RoutedEventArgs e)
+		{
+			index--;
+			Refresh();
+		}
+
+		private void Righter_Click(object sender, RoutedEventArgs e)
+		{
+			index++;
+			Refresh();
+		}
+
+		private void Refresh()
+		{
+			// Overflow behavior.
+			if (index > refList.Items.Count - 1) index = 0;
+			if (index < 0) index = refList.Items.Count - 1;
+
+			FileInfo fileInfo = refList.Items[index] as TFileInfo;
+			if (fileInfo == null)
+				throw new ArgumentNullException(
+					"Something fucked up, the thing selected in the ItemsControl ain't a FileInfo.");
+
+			Displayer.Source = Thumbnail(fileInfo, thumbSize);
+
+			this.Title = fileInfo.Name;
+		}
+
+		BitmapSource Thumbnail(FileInfo fi, ThumbnailSize ts)
+		{
+			switch (ts)
+			{
+				case ThumbnailSize.ExtraLarge:
+					return ShellFile.FromFilePath(fi.FullName).Thumbnail.ExtraLargeBitmapSource;
+				case ThumbnailSize.Large:
+					return ShellFile.FromFilePath(fi.FullName).Thumbnail.LargeBitmapSource;
+				case ThumbnailSize.Medium:
+					return ShellFile.FromFilePath(fi.FullName).Thumbnail.MediumBitmapSource;
+				case ThumbnailSize.Small:
+					return ShellFile.FromFilePath(fi.FullName).Thumbnail.SmallBitmapSource;
+				default:
+					return ShellFile.FromFilePath(fi.FullName).Thumbnail.LargeBitmapSource;
+			}
+		}
+	}
+
+	public enum ThumbnailSize
+	{
+		ExtraLarge,
+		Large,
+		Medium,
+		Small
 	}
 }
