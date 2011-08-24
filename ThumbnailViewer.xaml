@@ -1,4 +1,4 @@
-﻿<Window x:Class="BiblioRap.TestPage"
+﻿<Window x:Class="BiblioRap.ThumbnailViewer"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="TestPage" Height="512" Width="768" Loaded="Window_Loaded">
@@ -6,7 +6,7 @@
         <Button DockPanel.Dock="Left" Name="Lefter" Click="Lefter_Click">
             <Image Width="128" Source="Images\Arrows\left-arrow-128.png"/>
         </Button>
-        <Button DockPanel.Dock="Right" Name="Right" Click="Righter_Click">
+        <Button DockPanel.Dock="Right" Name="Righter" Click="Righter_Click">
             <Image Width="128" Source="Images\Arrows\right-arrow-128.png"/>
         </Button>
         <ComboBox Name="DisplayModer" DockPanel.Dock="Top" SelectionChanged="DisplayModer_SelectionChanged" />

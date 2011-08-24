@@ -18,13 +18,13 @@ namespace BiblioRap
 	/// <summary>
 	/// Interaction logic for TestPage.xaml
 	/// </summary>
-	public partial class TestPage : Window
+	public partial class ThumbnailViewer : Window
 	{
 		private ListBox refList = null;
 		private int index = -1;
 		private ThumbnailSize thumbSize = ThumbnailSize.ExtraLarge;
 
-		public TestPage(ListBox lBox)
+		public ThumbnailViewer(ListBox lBox)
 		{
 			refList = lBox;
 			InitializeComponent();
@@ -39,11 +39,19 @@ namespace BiblioRap
 				DisplayModer.Items.Add(size.ToString());
 			}
 			DisplayModer.SelectedIndex = 0;
+
+			
 		}
 
 		private void Displayer_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
 		{
-			MessageBox.Show("Width = " + Displayer.Source.Width + ", Height = " + Displayer.Source.Height);
+			MessageBox.Show("Width = " + Displayer.Source.Width + "| Height = " + Displayer.Source.Height);
+			MessageBox.Show(Lefter.ActualWidth + " | " + Lefter.ActualHeight + "\n"
+				 + Righter.ActualWidth + " | " + Righter.ActualHeight + "\n"
+				 + this.Width + " | " + this.Height + "\n"
+				 + (this.Width - Lefter.ActualWidth - Righter.ActualWidth) + " | "
+				 + (this.Height - DisplayModer.ActualHeight) + "\n"
+				 + Displayer.ActualWidth + " | " + Displayer.ActualHeight);
 		}
 
 		private void Lefter_Click(object sender, RoutedEventArgs e)
@@ -69,14 +77,9 @@ namespace BiblioRap
 				throw new ArgumentNullException(
 					"Something fucked up, the thing selected in the ItemsControl ain't a FileInfo.");
 
-			SetThumbnail(fileInfo);
+			Displayer.Source = Thumbnail(fileInfo, thumbSize);
 
 			this.Title = fileInfo.Name;
-		}
-
-		void SetThumbnail(FileInfo fi)
-		{
-			Displayer.Source = Thumbnail(fi, thumbSize);
 		}
 
 		BitmapSource Thumbnail(FileInfo fi, ThumbnailSize ts)

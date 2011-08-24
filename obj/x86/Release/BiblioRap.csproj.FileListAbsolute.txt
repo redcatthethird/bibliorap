@@ -21,5 +21,5 @@ C:\Users\luciano\Desktop\bibliorap\bin\Release\Microsoft.WindowsAPICodePack.Shel
 C:\Users\luciano\Desktop\bibliorap\bin\Release\Microsoft.WindowsAPICodePack.ExtendedLinguisticServices.pdb
 C:\Users\luciano\Desktop\bibliorap\bin\Release\Microsoft.WindowsAPICodePack.Sensors.pdb
 C:\Users\luciano\Desktop\bibliorap\bin\Release\Microsoft.WindowsAPICodePack.ShellExtensions.pdb
-C:\Users\luciano\Desktop\bibliorap\obj\x86\Release\TestPage.baml
-C:\Users\luciano\Desktop\bibliorap\obj\x86\Release\TestPage.g.cs
+C:\Users\luciano\Desktop\bibliorap\obj\x86\Release\ThumbnailViewer.baml
+C:\Users\luciano\Desktop\bibliorap\obj\x86\Release\ThumbnailViewer.g.cs
