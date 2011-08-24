@@ -167,6 +167,7 @@ namespace BiblioRap
 		private void filterBox_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			FileScanner.Abort();
+			bool caseSensitive = searchCaseSensitive.IsChecked ?? false;
 
 			// If items not saved yet, do so.
 			if (fileList == null)
@@ -181,14 +182,14 @@ namespace BiblioRap
 
 			// Clear the displayed filelist and add only the files that contain the filter.
 			mediaFileList.Items.Clear();
-			string filter = filterBox.Text.Trim();
+			string filter = caseSensitive ? filterBox.Text.Trim() : filterBox.Text.ToLower();
 			string name;
 			foreach (TFileInfo file in fileList)
 			{
 				if (ShowFullPaths ?? false)
-					name = file.FullName;
+					name = caseSensitive ? file.FullName : file.FullName.ToLower();
 				else
-					name = file.Name;
+					name = caseSensitive ? file.Name : file.Name.ToLower();
 
 				if (filter.IsNullOrEmpty() || name.Contains(filter))
 					mediaFileList.Items.Add(file);
@@ -202,12 +203,22 @@ namespace BiblioRap
 
 		private void searchCaseSensitive_Checked(object sender, RoutedEventArgs e)
 		{
-
+			if (filterBox.Text != "")
+			{
+				filterBox.Text = "";
+				foreach (TFileInfo file in fileList)
+					mediaFileList.Items.Add(file);
+			}
 		}
 
 		private void searchCaseSensitive_Unchecked(object sender, RoutedEventArgs e)
 		{
-
+			if (filterBox.Text != "")
+			{
+				filterBox.Text = "";
+				foreach (TFileInfo file in fileList)
+					mediaFileList.Items.Add(file);
+			}
 		}
 	}
 
