@@ -175,7 +175,7 @@ namespace BiblioRap
 				fileList = new List<FileInfo>(count);
 				for (int i = 0; i < count; i++)
 				{
-					fileList.Add(mediaFileList.Items[i] as FileInfo);
+					fileList.Add(mediaFileList.Items[i] as TFileInfo);
 				}
 			}
 
@@ -183,7 +183,7 @@ namespace BiblioRap
 			mediaFileList.Items.Clear();
 			string filter = filterBox.Text.Trim();
 			string name;
-			foreach (FileInfo file in fileList)
+			foreach (TFileInfo file in fileList)
 			{
 				if (ShowFullPaths ?? false)
 					name = file.FullName;
@@ -197,7 +197,17 @@ namespace BiblioRap
 
 		private void Thumbnailer_Click(object sender, RoutedEventArgs e)
 		{
-			(new TestPage(mediaFileList)).ShowDialog();
+			(new ThumbnailViewer(mediaFileList)).ShowDialog();
+		}
+
+		private void searchCaseSensitive_Checked(object sender, RoutedEventArgs e)
+		{
+
+		}
+
+		private void searchCaseSensitive_Unchecked(object sender, RoutedEventArgs e)
+		{
+
 		}
 	}
 

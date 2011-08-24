@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:BiblioRap"
         xmlns:io="clr-namespace:System.IO;assembly=mscorlib"
-        MinHeight="200" MinWidth="400"
+        MinHeight="200" MinWidth="500"
+        Height="400" Width="600"
         Name="mainWin" Title="BiblioRap"
         >
     <Window.CommandBindings>
@@ -102,12 +103,13 @@
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
                     <TextBlock>Filter:</TextBlock>
                     <TextBox Width="100px" Name="filterBox" TextChanged="filterBox_TextChanged"/>
+                    <CheckBox Name="searchCaseSensitive" Checked="searchCaseSensitive_Checked" Unchecked="searchCaseSensitive_Unchecked">Case-sensitive</CheckBox>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Height="20">
                 <CheckBox Name="isRecursiveScan" IsChecked="True">Scan recursively</CheckBox>
                 <CheckBox Name="showFullPath" IsChecked="{Binding ElementName=mainWin, Path=ShowFullPaths, Mode=TwoWay}">Show full paths</CheckBox>
                 <CheckBox Name="countFiles" IsChecked="True">Count files</CheckBox>
-            </StackPanel>
+                </StackPanel>
             </DockPanel>
             
             <ListBox Grid.Row="2" Name="mediaFileList" MouseDoubleClick="FileDoubleClick" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
