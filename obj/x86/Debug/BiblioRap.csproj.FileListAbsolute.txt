@@ -1,0 +1,31 @@
+C:\Users\Red Cat\Desktop\bibliorap\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\Red Cat\Desktop\bibliorap\obj\x86\Debug\AboutDialog.baml
+C:\Users\Red Cat\Desktop\bibliorap\obj\x86\Debug\MainWindow.baml
+C:\Users\Red Cat\Desktop\bibliorap\obj\x86\Debug\AboutDialog.g.cs
+C:\Users\Red Cat\Desktop\bibliorap\obj\x86\Debug\MainWindow.g.cs
+C:\Users\Red Cat\Desktop\bibliorap\obj\x86\Debug\App.g.cs
+C:\Users\Red Cat\Desktop\bibliorap\obj\x86\Debug\BiblioRap_MarkupCompile.cache
+C:\Users\Red Cat\Desktop\bibliorap\obj\x86\Debug\BiblioRap.g.resources
+C:\Users\Red Cat\Desktop\bibliorap\obj\x86\Debug\BiblioRap.Properties.Resources.resources
+C:\Users\Red Cat\Desktop\bibliorap\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Users\Red Cat\Desktop\bibliorap\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Users\Red Cat\Desktop\bibliorap\bin\Debug\BiblioRap.exe
+C:\Users\Red Cat\Desktop\bibliorap\bin\Debug\BiblioRap.pdb
+C:\Users\Red Cat\Desktop\bibliorap\obj\x86\Debug\BiblioRap.exe
+C:\Users\Red Cat\Desktop\bibliorap\obj\x86\Debug\BiblioRap.pdb
+C:\Users\luciano\Desktop\bibliorap\obj\x86\Debug\BiblioRap.exe
+C:\Users\luciano\Desktop\bibliorap\obj\x86\Debug\BiblioRap.pdb
+C:\Users\luciano\Desktop\bibliorap\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\luciano\Desktop\bibliorap\obj\x86\Debug\AboutDialog.baml
+C:\Users\luciano\Desktop\bibliorap\obj\x86\Debug\MainWindow.baml
+C:\Users\luciano\Desktop\bibliorap\obj\x86\Debug\AboutDialog.g.cs
+C:\Users\luciano\Desktop\bibliorap\obj\x86\Debug\MainWindow.g.cs
+C:\Users\luciano\Desktop\bibliorap\obj\x86\Debug\App.g.cs
+C:\Users\luciano\Desktop\bibliorap\obj\x86\Debug\BiblioRap_MarkupCompile.cache
+C:\Users\luciano\Desktop\bibliorap\obj\x86\Debug\BiblioRap.g.resources
+C:\Users\luciano\Desktop\bibliorap\bin\Debug\BiblioRap.exe
+C:\Users\luciano\Desktop\bibliorap\bin\Debug\BiblioRap.pdb
+C:\Users\luciano\Desktop\bibliorap\obj\x86\Debug\BiblioRap.Properties.Resources.resources
+C:\Users\luciano\Desktop\bibliorap\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Users\luciano\Desktop\bibliorap\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Users\luciano\Desktop\bibliorap\obj\x86\Debug\BiblioRap_MarkupCompile.lref
