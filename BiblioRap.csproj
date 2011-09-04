@@ -36,8 +36,22 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.WindowsAPICodePack.Shell">
-      <HintPath>dependencies\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+    <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Windows API Code Pack 1.1\binaries\Microsoft.WindowsAPICodePack.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.ExtendedLinguisticServices">
+      <HintPath>..\Windows API Code Pack 1.1\binaries\Microsoft.WindowsAPICodePack.ExtendedLinguisticServices.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.Sensors">
+      <HintPath>..\Windows API Code Pack 1.1\binaries\Microsoft.WindowsAPICodePack.Sensors.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Windows API Code Pack 1.1\binaries\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.ShellExtensions">
+      <HintPath>..\Windows API Code Pack 1.1\binaries\Microsoft.WindowsAPICodePack.ShellExtensions.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -124,6 +138,10 @@
     <Resource Include="Images\Arrows\down-arrows-32.png" />
     <Resource Include="Images\Arrows\down-arrows-48.png" />
     <Resource Include="Images\Arrows\down-arrows-64.png" />
+    <Resource Include="Images\Arrows\left-arrow-1-16.png" />
+    <Resource Include="Images\Arrows\left-arrow-1-32.png" />
+    <Resource Include="Images\Arrows\left-arrow-1-48.png" />
+    <Resource Include="Images\Arrows\left-arrow-1-64.png" />
     <Resource Include="Images\Arrows\left-arrow-128.png" />
     <Resource Include="Images\Arrows\left-arrow-16.png" />
     <Resource Include="Images\Arrows\left-arrow-256.png" />
@@ -160,9 +178,6 @@
     <Resource Include="Images\Arrows\up-arrows-32.png" />
     <Resource Include="Images\Arrows\up-arrows-48.png" />
     <Resource Include="Images\Arrows\up-arrows-64.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
