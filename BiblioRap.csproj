@@ -138,10 +138,6 @@
     <Resource Include="Images\Arrows\down-arrows-32.png" />
     <Resource Include="Images\Arrows\down-arrows-48.png" />
     <Resource Include="Images\Arrows\down-arrows-64.png" />
-    <Resource Include="Images\Arrows\left-arrow-1-16.png" />
-    <Resource Include="Images\Arrows\left-arrow-1-32.png" />
-    <Resource Include="Images\Arrows\left-arrow-1-48.png" />
-    <Resource Include="Images\Arrows\left-arrow-1-64.png" />
     <Resource Include="Images\Arrows\left-arrow-128.png" />
     <Resource Include="Images\Arrows\left-arrow-16.png" />
     <Resource Include="Images\Arrows\left-arrow-256.png" />

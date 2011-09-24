@@ -28,6 +28,8 @@ namespace BiblioRap
 			TextBlock statusDisplayer,
 			ProgressBar statusProgress,
 			ItemsControl statusItems,
+			TextBlock nrFiles,
+			TextBlock countedFiles,
 			params string[] extensions)
 		{
 			string[] driveStrings = Directory.GetLogicalDrives();
@@ -57,6 +59,7 @@ namespace BiblioRap
 				}
 
 				statusProgress.Dispatcher.BeginInvoke(UpdateProgress, statusProgress, WantedDirectoriesCounter, UpdateProgressType.ProgressMaximum);
+				nrFiles.Dispatcher.BeginInvoke(UpdateProgress, nrFiles, WantedDirectoriesCounter.ToString(), UpdateProgressType.TextBlockText);
 
 				WantedDirectoriesCounter = 0;
 			}
@@ -69,7 +72,7 @@ namespace BiblioRap
 					Init(ref scanner);
 					scanner.Add(new Thread(new ThreadStart(delegate()
 					{
-						drive._GetFilesSelectively(scanRecursively, statusDisplayer, statusProgress, statusItems, extensions);
+						drive._GetFilesSelectively(scanRecursively, statusDisplayer, statusProgress, statusItems, nrFiles, countedFiles, extensions);
 					})));
 					scanner[lastScanner].Name = "File scanning thread #" + lastScanner;
 					scanner[lastScanner].IsBackground = true;
@@ -89,6 +92,8 @@ namespace BiblioRap
 			TextBlock statusDisplayer,
 			ProgressBar statusProgress,
 			ItemsControl statusItems,
+			TextBlock nrFiles,
+			TextBlock countedFiles,
 			params string[] extensions)
 		{
 			if (statusProgress != null)
@@ -106,6 +111,7 @@ namespace BiblioRap
 				lastCounter++;
 
 				statusProgress.Dispatcher.BeginInvoke(UpdateProgress, statusProgress, WantedDirectoriesCounter, UpdateProgressType.ProgressMaximum);
+				nrFiles.Dispatcher.BeginInvoke(UpdateProgress, nrFiles, WantedDirectoriesCounter.ToString(), UpdateProgressType.TextBlockText);
 
 				WantedDirectoriesCounter = 0;
 			}
@@ -113,7 +119,7 @@ namespace BiblioRap
 			Init(ref scanner);
 			scanner.Add(new Thread(new ThreadStart(delegate()
 			{
-				path._GetFilesSelectively(scanRecursively, statusDisplayer, statusProgress, statusItems, extensions);
+				path._GetFilesSelectively(scanRecursively, statusDisplayer, statusProgress, statusItems, nrFiles, countedFiles, extensions);
 			})));
 			scanner[lastScanner].Name = "File scanning thread #" + lastScanner;
 			scanner[lastScanner].IsBackground = true;
@@ -126,6 +132,8 @@ namespace BiblioRap
 			TextBlock statusDisplayer,
 			ProgressBar statusProgress,
 			ItemsControl statusItems,
+			TextBlock nrFiles,
+			TextBlock countedFiles,
 			params string[] extensions)
 		{
 			FileInfo[] allFiles;
@@ -140,11 +148,13 @@ namespace BiblioRap
 				throw;
 			}
 
+
+			WantedDirectoriesCounter++;
 			if (statusProgress != null)
-			{
-				WantedDirectoriesCounter++;
 				statusProgress.Dispatcher.BeginInvoke(UpdateProgress, statusProgress, WantedDirectoriesCounter, UpdateProgressType.ProgressValue);
-			}
+			if (countedFiles != null)
+				countedFiles.Dispatcher.BeginInvoke(UpdateProgress, countedFiles, WantedDirectoriesCounter.ToString(), UpdateProgressType.TextBlockText);
+
 
 			foreach (FileInfo file in allFiles)
 			{
@@ -161,7 +171,7 @@ namespace BiblioRap
 
 			if (scanRecursively)
 				foreach (DirectoryInfo directory in path.GetDirectories())
-					directory._GetFilesSelectively(true, statusDisplayer, statusProgress, statusItems, extensions);
+					directory._GetFilesSelectively(true, statusDisplayer, statusProgress, statusItems, nrFiles, countedFiles, extensions);
 		}
 
 		public static List<FileInfo> GetFilesSelectivelyFromDirectory(DirectoryInfo path, bool scanRecursively, params string[] extensions)
@@ -324,7 +334,7 @@ namespace BiblioRap
 				MessageBox.Show(
 					"Something went wrong here, in the UpdateProgress method. Not cool, dude, not cool at all.\n" +
 					ex.Message,
-					ex.InnerException.Message,
+					"Not very good",
 					MessageBoxButton.OK,
 					MessageBoxImage.Error,
 					MessageBoxResult.OK,
@@ -361,20 +371,20 @@ namespace BiblioRap
 				foreach (Thread count in counter)
 					if (count != null && count.IsAlive && count.ThreadState != ThreadState.AbortRequested)
 						count.Abort();
+			counter = null;
+			lastCounter = 0;
 			if (scanner != null)
 				foreach (Thread scan in scanner)
 					if (scan != null && scan.IsAlive && scan.ThreadState != ThreadState.AbortRequested)
 						scan.Abort();
+			scanner = null;
+			lastScanner = 0;
 			if (intermediate != null)
 				foreach (Thread inter in intermediate)
 					if (inter != null && inter.IsAlive && inter.ThreadState != ThreadState.AbortRequested)
 						inter.Abort();
-		}
-
-		public static void Add<T>(this ItemCollection target, IEnumerable<T> source)
-		{
-			foreach (T item in source)
-				target.Add(item);
+			intermediate = null;
+			lastIntermediate = 0;
 		}
 
 		private static void Init(ref List<Thread> threads)

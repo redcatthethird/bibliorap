@@ -154,6 +154,16 @@
                         Click="SaveButton_Click">
                         Save filenames
                 </Button>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                    <StackPanel.Resources>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Padding" Value="2.5"/>
+                        </Style>
+                    </StackPanel.Resources>
+                    <TextBlock Name="countedFiles">0</TextBlock>
+                    <TextBlock>/</TextBlock>
+                    <TextBlock Name="allFiles">0</TextBlock>
+                </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <Button Name="StartScanButton"
                             Click="StartScanButton_Click">
