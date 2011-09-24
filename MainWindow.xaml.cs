@@ -104,7 +104,7 @@ namespace BiblioRap
 			bool counting = countFiles.IsChecked ?? false;
 			if (path == "*")
 			{
-				FileScanner.GetAllFilesSelectively(recursive, ScanLabel, counting ? ScanProgressBar : null, mediaFileList, Ext);
+				FileScanner.GetAllFilesSelectively(recursive, ScanLabel, counting ? ScanProgressBar : null, mediaFileList, allFiles, countedFiles, Ext);
 			}
 			else
 			{
@@ -117,7 +117,7 @@ namespace BiblioRap
 				}
 
 				mediaFileList.Items.Clear();
-				scanPath.GetFilesSelectively(recursive, ScanLabel, counting ? ScanProgressBar : null, mediaFileList, Ext);
+				scanPath.GetFilesSelectively(recursive, ScanLabel, counting ? ScanProgressBar : null, mediaFileList, allFiles, countedFiles, Ext);
 			}
         }
 		private void StopScanButton_Click(object sender, RoutedEventArgs e)
@@ -295,6 +295,12 @@ namespace BiblioRap
 			if (nr.CompareTo(max) > 0)
 				return max;
 			return nr;
+		}
+
+		public static void Add<T>(this ItemCollection target, IEnumerable<T> source)
+		{
+			foreach (T item in source)
+				target.Add(item);
 		}
 	}
 
