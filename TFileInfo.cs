@@ -27,6 +27,17 @@ namespace BiblioRap
 			get { return fileInfo.Name; }
 		}
 
+		private bool isPic
+		{
+			get
+			{
+				foreach (string str in MainWindow.PicExt)
+					if (fileInfo.FullName.EndsWith(str))
+						return true;
+				return false;
+			}
+		}
+
 		private BitmapSource _thumbnail;
 		private bool _thIsInit = false;
 		public BitmapSource Thumbnail
@@ -35,9 +46,19 @@ namespace BiblioRap
 			{
 				if (!_thIsInit)
 				{
-					//_thumbnail = fileInfo.GetThumbnail().ToBitmapSource();
-					ShellFile sf = ShellFile.FromFilePath(fileInfo.FullName);
-					_thumbnail = sf.Thumbnail.LargeBitmapSource;
+					if (Misc.Windows7)
+					{
+						//_thumbnail = fileInfo.GetThumbnail().ToBitmapSource();
+						ShellFile sf = ShellFile.FromFilePath(fileInfo.FullName);
+						_thumbnail = sf.Thumbnail.LargeBitmapSource;
+					}
+					else
+					{
+						if (isPic)
+							_thumbnail = new Bitmap(Image.FromFile(fileInfo.FullName)).ToBitmapSource();
+						else
+							_thumbnail = Icon.ExtractAssociatedIcon(fileInfo.FullName).ToBitmap().ToBitmapSource();
+					}
 				}
 				return _thumbnail;
 			}

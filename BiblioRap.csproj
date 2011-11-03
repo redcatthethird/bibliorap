@@ -74,6 +74,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Misc.cs" />
     <Compile Include="ShellThumbnail.cs" />
     <Compile Include="ThumbnailViewer.xaml.cs">
       <DependentUpon>ThumbnailViewer.xaml</DependentUpon>
