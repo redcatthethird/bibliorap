@@ -46,31 +46,30 @@ namespace BiblioRap
 			{
 				if (!_thIsInit)
 				{
+					double screenW = System.Windows.SystemParameters.PrimaryScreenWidth;
+					double screenH = System.Windows.SystemParameters.PrimaryScreenHeight;
+
 					if (Misc.Windows7)
 					{
 						//_thumbnail = fileInfo.GetThumbnail().ToBitmapSource();
 						ShellFile sf = ShellFile.FromFilePath(fileInfo.FullName);
-						_thumbnail = sf.Thumbnail.LargeBitmapSource;
+						Bitmap b = sf.Thumbnail.SmallBitmap;
+						bool reswidth = b.Width/screenW > b.Height/screenH; // should I resize the width ?
+						(int)System.Windows.SystemParameters.PrimaryScreenWidth / 10
+						_thumbnail = sf.Thumbnail.ExtraLargeBitmap.GetHbitmap();
 					}
 					else
 					{
 						if (isPic)
+						{
 							_thumbnail = new Bitmap(Image.FromFile(fileInfo.FullName)).ToBitmapSource();
+						}
 						else
 							_thumbnail = Icon.ExtractAssociatedIcon(fileInfo.FullName).ToBitmap().ToBitmapSource();
 					}
 				}
 				return _thumbnail;
 			}
-		}
-
-		public static implicit operator FileInfo(TFileInfo fi)
-		{
-			return new FileInfo(fi.FullName);
-		}
-		public static implicit operator TFileInfo(FileInfo fi)
-		{
-			return new TFileInfo(fi);
 		}
 	}
 }

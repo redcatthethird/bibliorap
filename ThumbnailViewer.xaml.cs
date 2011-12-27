@@ -45,13 +45,13 @@ namespace BiblioRap
 
 		private void Displayer_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
 		{
-			MessageBox.Show("Width = " + Displayer.Source.Width + "| Height = " + Displayer.Source.Height);
-			MessageBox.Show(Lefter.ActualWidth + " | " + Lefter.ActualHeight + "\n"
-				 + Righter.ActualWidth + " | " + Righter.ActualHeight + "\n"
-				 + this.Width + " | " + this.Height + "\n"
-				 + (this.Width - Lefter.ActualWidth - Righter.ActualWidth) + " | "
-				 + (this.Height - DisplayModer.ActualHeight) + "\n"
-				 + Displayer.ActualWidth + " | " + Displayer.ActualHeight);
+			//MessageBox.Show("Width = " + Displayer.Source.Width + "| Height = " + Displayer.Source.Height);
+			//MessageBox.Show(Lefter.ActualWidth + " | " + Lefter.ActualHeight + "\n"
+			//     + Righter.ActualWidth + " | " + Righter.ActualHeight + "\n"
+			//     + this.Width + " | " + this.Height + "\n"
+			//     + (this.Width - Lefter.ActualWidth - Righter.ActualWidth) + " | "
+			//     + (this.Height - DisplayModer.ActualHeight) + "\n"
+			//     + Displayer.ActualWidth + " | " + Displayer.ActualHeight);
 		}
 
 		private void Lefter_Click(object sender, RoutedEventArgs e)
@@ -75,7 +75,7 @@ namespace BiblioRap
 			FileInfo fileInfo = refList.Items[index] as TFileInfo;
 			if (fileInfo == null)
 				throw new ArgumentNullException(
-					"Something fucked up, the thing selected in the ItemsControl ain't a FileInfo.");
+					"Something got screwed up, the thing selected in the ItemsControl ain't a FileInfo.");
 
 			Displayer.Source = Thumbnail(fileInfo, thumbSize);
 
