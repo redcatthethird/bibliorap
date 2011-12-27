@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Threading;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Interop;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 using RMA.Shell;
@@ -93,6 +91,38 @@ namespace BiblioRap
 		{
 			foreach (T item in source)
 				target.Add(item);
+		}
+
+		public static implicit operator FileInfo(TFileInfo fi)
+		{
+			return new FileInfo(fi.FullName);
+		}
+		public static implicit operator TFileInfo(FileInfo fi)
+		{
+			return new TFileInfo(fi);
+		}
+
+		public static explicit operator BitmapSource(Bitmap bmp)
+		{
+			return bmp.ToBitmapSource();
+		}
+
+		public static Bitmap GetResized(this Bitmap bmp, int width, int height)
+		{
+			MemoryStream ms = new MemoryStream();
+			bmp.Save(ms, ImageFormat.Png);
+			BitmapImage bi = new BitmapImage();
+			bi.BeginInit();
+			if (width > 0)
+				bi.DecodePixelWidth = width;
+			if (height > 0)
+				bi.DecodePixelHeight = height;
+			bi.StreamSource = ms;
+			bi.EndInit();
+
+
+			MemoryStream mse = new MemoryStream();
+			BmpBitmapEncoder e = new BmpBitmapDecoder();
 		}
 	}
 
