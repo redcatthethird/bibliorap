@@ -1,0 +1,23 @@
+﻿<Window x:Class="BiblioRap.Recreation"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:BiblioRap"
+        Title="Originat.er" Height="300" Width="300" Loaded="Window_Loaded" Name="recrOrig">
+    <DockPanel>
+        <ComboBox Name="OriginModer" DockPanel.Dock="Top" />
+        <StackPanel DockPanel.Dock="Bottom">
+            <Button Name="Fixer" Click="Fixer_Click">Fix.er</Button>
+        </StackPanel>
+        <ListBox Name="ConflictList" MouseRightButtonUp="ConflictList_MouseRightButtonUp">
+            <ListBox.Resources>
+                <DataTemplate DataType="{x:Type local:TFileInfo}">
+                    <StackPanel Height="48" Margin="5" StackPanel.Orientation="Horizontal">
+                        <Image Source="{Binding Thumbnail}" Width="64" VerticalAlignment="Center"/>
+                        <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding FullName}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.Resources>
+        </ListBox>
+    </DockPanel>
+</Window>
