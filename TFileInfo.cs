@@ -11,20 +11,20 @@ namespace BiblioRap
 {
 	public class TFileInfo
 	{
-		private FileInfo fileInfo;
+		public FileInfo f;
 
 		public TFileInfo(FileInfo fi)
 		{
-			fileInfo = fi;
+			f = fi;
 		}
 
 		public String FullName
 		{
-			get { return fileInfo.FullName; }
+			get { return f.FullName; }
 		}
 		public String Name
 		{
-			get { return fileInfo.Name; }
+			get { return f.Name; }
 		}
 
 		private bool isPic
@@ -32,7 +32,7 @@ namespace BiblioRap
 			get
 			{
 				foreach (string str in MainWindow.PicExt)
-					if (fileInfo.FullName.EndsWith(str))
+					if (f.FullName.EndsWith(str))
 						return true;
 				return false;
 			}
@@ -52,7 +52,7 @@ namespace BiblioRap
 					if (Misc.Windows7)
 					{
 						//_thumbnail = fileInfo.GetThumbnail().ToBitmapSource();
-						ShellFile sf = ShellFile.FromFilePath(fileInfo.FullName);
+						ShellFile sf = ShellFile.FromFilePath(f.FullName);
 						Bitmap b = sf.Thumbnail.SmallBitmap;
 						bool reswidth = b.Width/screenW > b.Height/screenH; // should I resize the width ?
 						//(int)System.Windows.SystemParameters.PrimaryScreenWidth / 10;
@@ -62,10 +62,10 @@ namespace BiblioRap
 					{
 						if (isPic)
 						{
-							_thumbnail = new Bitmap(Image.FromFile(fileInfo.FullName)).ToBitmapSource();
+							_thumbnail = new Bitmap(Image.FromFile(f.FullName)).ToBitmapSource();
 						}
 						else
-							_thumbnail = Icon.ExtractAssociatedIcon(fileInfo.FullName).ToBitmap().ToBitmapSource();
+							_thumbnail = Icon.ExtractAssociatedIcon(f.FullName).ToBitmap().ToBitmapSource();
 					}
 				}
 				return _thumbnail;

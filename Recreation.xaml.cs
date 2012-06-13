@@ -3,7 +3,6 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -47,15 +46,16 @@ namespace BiblioRap
 		private void BringUpDuplicates()
 		{
 			int j;
+			List<TFileInfo> tasdf = new List<TFileInfo>();
 			ConflictList.Items.Clear();
+			IOrderedEnumerable<TFileInfo> l;
 			OriginMode mode = (OriginMode)Enum.Parse(typeof(OriginMode), OriginModer.SelectedItem.ToString());
 			switch (mode) 
 			{
 				case OriginMode.Name:
-					IOrderedEnumerable<TFileInfo> sl = flz.OrderBy(t => t.Name);
-					flz = sl.ToArray();
+					l = flz.OrderBy(t => t.Name);
+					flz = l.ToArray();
 					for (int i = 0; i < n; i++)
-					{
 						if (i+1 < n && flz[i].Name == flz[i+1].Name)
 						{
 							ConflictList.Items.Add(flz[i]);
@@ -64,17 +64,39 @@ namespace BiblioRap
 								ConflictList.Items.Add(flz[i+j]);
 							i += j - 1;
 						}
-					}
-
 					break;
-				case OriginMode.Bytecheck:
+				case OriginMode.Size:
+					l = flz.OrderBy(t => t.f.Length);
+					flz = l.ToArray();
+					for (int i = 0; i < n; i++)
+						if (i+1 < n && flz[i].f.Length == flz[i+1].f.Length)
+						{
+							ConflictList.Items.Add(flz[i]);
+							ConflictList.Items.Add(flz[i+1]);
+							for (j = 2; i + j < n && flz[i].f.Length == flz[i + j].f.Length; j++)
+								ConflictList.Items.Add(flz[i+j]);
+							i += j - 1;
+						}
 					break;
 				case OriginMode.MD5:
+					l = flz.OrderBy(t => t.MD5Hash());
+					flz = l.ToArray();
+					for (int i = 0; i < n; i++)
+						if (i+1 < n && flz[i].f.Length == flz[i+1].f.Length)
+						{
+							ConflictList.Items.Add(flz[i]);
+							ConflictList.Items.Add(flz[i+1]);
+							for (j = 2; i + j < n && flz[i].MD5Hash() == flz[i + j].MD5Hash(); j++)
+								ConflictList.Items.Add(flz[i+j]);
+							i += j - 1;
+						}
 					break;
 				default:
 					break;
 			}
 		}
+
+
 
 		private void Fixer_Click(object sender, RoutedEventArgs e)
 		{
@@ -95,12 +117,29 @@ namespace BiblioRap
 			D.Point p = new D.Point((int)p0.X, (int)p0.Y);
 			ctxM.ShowContextMenu(fis, p);
 		}
+
+		private void Deleter_Click(object sender, RoutedEventArgs e)
+		{
+			if (ConflictList.SelectedIndex == -1)
+				return;
+			List<TFileInfo> tf = new List<TFileInfo>();
+			foreach (TFileInfo t in ConflictList.SelectedItems)
+			{
+				(new FileInfo(t.FullName)).Delete();
+				tf.Add(t);
+			}
+			foreach (TFileInfo t in tf)
+			{
+				ConflictList.Items.Remove(t);
+				refList.Items.Remove(t);
+			}
+		}
 	}
 
 	public enum OriginMode
 	{
 		Name,
-		Bytecheck,
+		Size,
 		MD5
 	}
 }

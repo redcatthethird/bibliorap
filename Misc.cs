@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Text;
 using System.Windows.Threading;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Interop;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Security.Cryptography;
 using System.IO;
 using System.Runtime.InteropServices;
 using RMA.Shell;
@@ -93,6 +95,27 @@ namespace BiblioRap
 			foreach (T item in source)
 				target.Add(item);
 		}
+
+		public static string MD5Hash(this TFileInfo tf)
+		{
+			FileStream stream = tf.f.OpenRead();
+			//calculate the files hash
+			byte[] hash = (new MD5CryptoServiceProvider()).ComputeHash(stream);
+
+			//string builder to hold the results
+			StringBuilder sb = new StringBuilder();
+
+			//loop through each byte in the byte array
+			foreach (byte b in hash)
+			{
+				//format each byte into the proper value and append
+				//current value to return value
+				sb.Append(b.ToString("X2"));
+			}
+
+			//return the MD5 hash of the file
+			return sb.ToString();
+		} 
 
 		public static BitmapSource BitmapSource(this Bitmap bmp)
 		{
