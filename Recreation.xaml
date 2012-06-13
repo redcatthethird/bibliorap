@@ -4,11 +4,19 @@
         xmlns:local="clr-namespace:BiblioRap"
         Title="Originat.er" Height="300" Width="300" Loaded="Window_Loaded" Name="recrOrig">
     <DockPanel>
+        <DockPanel.Resources>
+            <Style TargetType="{x:Type Button}">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Margin" Value="3"/>
+                <Setter Property="Width" Value="100"/>
+            </Style>
+        </DockPanel.Resources>
         <ComboBox Name="OriginModer" DockPanel.Dock="Top" />
-        <StackPanel DockPanel.Dock="Bottom">
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
             <Button Name="Fixer" Click="Fixer_Click">Fix.er</Button>
+            <Button Name="Deleter"  Click="Deleter_Click">Delet.er</Button>
         </StackPanel>
-        <ListBox Name="ConflictList" MouseRightButtonUp="ConflictList_MouseRightButtonUp">
+        <ListBox Name="ConflictList" MouseRightButtonUp="ConflictList_MouseRightButtonUp" SelectionMode="Extended">
             <ListBox.Resources>
                 <DataTemplate DataType="{x:Type local:TFileInfo}">
                     <StackPanel Height="48" Margin="5" StackPanel.Orientation="Horizontal">

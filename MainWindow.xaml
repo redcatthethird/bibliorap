@@ -86,7 +86,7 @@
             <DockPanel Grid.Row="0">
                 <Label DockPanel.Dock="Left" VerticalAlignment="Center">Folder to scan:</Label>
                 <Button DockPanel.Dock="Right" Name="BrowseButton" Click="BrowseButton_Click">Browse</Button>
-                <TextBox Name="ScanDirectory" Text="C:\Users\Red Cat\Desktop\Photography" />
+                <TextBox Name="ScanDirectory" Text="C:\Users\Red Cat\Desktop\New folder" />
             </DockPanel>
             
             <DockPanel Grid.Row="1">
