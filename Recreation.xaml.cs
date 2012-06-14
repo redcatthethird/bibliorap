@@ -43,25 +43,25 @@ namespace BiblioRap
 			OriginModer.SelectedIndex = 0;
 		}
 
-		private void BringUpDuplicates()
+		private void Fixer_Click(object sender, RoutedEventArgs e)
 		{
 			int j;
 			List<TFileInfo> tasdf = new List<TFileInfo>();
 			ConflictList.Items.Clear();
 			IOrderedEnumerable<TFileInfo> l;
 			OriginMode mode = (OriginMode)Enum.Parse(typeof(OriginMode), OriginModer.SelectedItem.ToString());
-			switch (mode) 
+			switch (mode)
 			{
 				case OriginMode.Name:
 					l = flz.OrderBy(t => t.Name);
 					flz = l.ToArray();
 					for (int i = 0; i < n; i++)
-						if (i+1 < n && flz[i].Name == flz[i+1].Name)
+						if (i + 1 < n && flz[i].Name == flz[i + 1].Name)
 						{
 							ConflictList.Items.Add(flz[i]);
-							ConflictList.Items.Add(flz[i+1]);
-							for (j = 2; i + j < n && flz[i].Name == flz[i+j].Name; j++)
-								ConflictList.Items.Add(flz[i+j]);
+							ConflictList.Items.Add(flz[i + 1]);
+							for (j = 2; i + j < n && flz[i].Name == flz[i + j].Name; j++)
+								ConflictList.Items.Add(flz[i + j]);
 							i += j - 1;
 						}
 					break;
@@ -69,12 +69,12 @@ namespace BiblioRap
 					l = flz.OrderBy(t => t.f.Length);
 					flz = l.ToArray();
 					for (int i = 0; i < n; i++)
-						if (i+1 < n && flz[i].f.Length == flz[i+1].f.Length)
+						if (i + 1 < n && flz[i].f.Length == flz[i + 1].f.Length)
 						{
 							ConflictList.Items.Add(flz[i]);
-							ConflictList.Items.Add(flz[i+1]);
+							ConflictList.Items.Add(flz[i + 1]);
 							for (j = 2; i + j < n && flz[i].f.Length == flz[i + j].f.Length; j++)
-								ConflictList.Items.Add(flz[i+j]);
+								ConflictList.Items.Add(flz[i + j]);
 							i += j - 1;
 						}
 					break;
@@ -82,25 +82,25 @@ namespace BiblioRap
 					l = flz.OrderBy(t => t.MD5Hash());
 					flz = l.ToArray();
 					for (int i = 0; i < n; i++)
-						if (i+1 < n && flz[i].f.Length == flz[i+1].f.Length)
+						if (i + 1 < n && flz[i].f.Length == flz[i + 1].f.Length)
 						{
 							ConflictList.Items.Add(flz[i]);
-							ConflictList.Items.Add(flz[i+1]);
+							ConflictList.Items.Add(flz[i + 1]);
 							for (j = 2; i + j < n && flz[i].MD5Hash() == flz[i + j].MD5Hash(); j++)
-								ConflictList.Items.Add(flz[i+j]);
+								ConflictList.Items.Add(flz[i + j]);
 							i += j - 1;
 						}
 					break;
 				default:
 					break;
 			}
-		}
 
-
-
-		private void Fixer_Click(object sender, RoutedEventArgs e)
-		{
-			BringUpDuplicates();
+			if (ConflictList.Items.Count <= 0)
+				MessageBox.Show("You probably have no duplicate files in the scanned folder. "
+								+ "If in doubt, select another scanning method from above and try again",
+								"No duplicates",
+								MessageBoxButton.OK,
+								MessageBoxImage.Exclamation);
 		}
 
 		private void ConflictList_MouseRightButtonUp(object sender, MouseButtonEventArgs e)

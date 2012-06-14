@@ -20,7 +20,7 @@
             <ListBox.Resources>
                 <DataTemplate DataType="{x:Type local:TFileInfo}">
                     <StackPanel Height="48" Margin="5" StackPanel.Orientation="Horizontal">
-                        <Image Source="{Binding Thumbnail}" Width="64" VerticalAlignment="Center"/>
+                        <Image Source="{Binding Thumb}" Width="64" VerticalAlignment="Center"/>
                         <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding FullName}"
                                    VerticalAlignment="Center" />
                     </StackPanel>

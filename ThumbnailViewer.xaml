@@ -4,10 +4,10 @@
         Title="TestPage" Height="512" Width="768" Loaded="Window_Loaded">
     <DockPanel>
         <Button DockPanel.Dock="Left" Name="Lefter" Click="Lefter_Click">
-            <Image Width="128" Source="Images\Arrows\left-arrow-128.png"/>
+            <Image Width="128" Source="Images\left-arrow-128.png"/>
         </Button>
         <Button DockPanel.Dock="Right" Name="Righter" Click="Righter_Click">
-            <Image Width="128" Source="Images\Arrows\right-arrow-128.png"/>
+            <Image Width="128" Source="Images\right-arrow-128.png"/>
         </Button>
         <ComboBox Name="DisplayModer" DockPanel.Dock="Top" SelectionChanged="DisplayModer_SelectionChanged" />
         
