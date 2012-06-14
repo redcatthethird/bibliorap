@@ -141,48 +141,12 @@
     <Resource Include="Images\Metal-OnCrop.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Arrows\down-arrows-128.png" />
-    <Resource Include="Images\Arrows\down-arrows-16.png" />
-    <Resource Include="Images\Arrows\down-arrows-256.png" />
-    <Resource Include="Images\Arrows\down-arrows-32.png" />
-    <Resource Include="Images\Arrows\down-arrows-48.png" />
-    <Resource Include="Images\Arrows\down-arrows-64.png" />
-    <Resource Include="Images\Arrows\left-arrow-128.png" />
-    <Resource Include="Images\Arrows\left-arrow-16.png" />
-    <Resource Include="Images\Arrows\left-arrow-256.png" />
-    <Resource Include="Images\Arrows\left-arrow-32.png" />
-    <Resource Include="Images\Arrows\left-arrow-48.png" />
-    <Resource Include="Images\Arrows\left-arrow-64.png" />
-    <Resource Include="Images\Arrows\left-arrows-128.png" />
-    <Resource Include="Images\Arrows\left-arrows-16.png" />
-    <Resource Include="Images\Arrows\left-arrows-256.png" />
-    <Resource Include="Images\Arrows\left-arrows-32.png" />
-    <Resource Include="Images\Arrows\left-arrows-48.png" />
-    <Resource Include="Images\Arrows\left-arrows-64.png" />
-    <Resource Include="Images\Arrows\right-arrow-128.png" />
-    <Resource Include="Images\Arrows\right-arrow-16.png" />
-    <Resource Include="Images\Arrows\right-arrow-256.png" />
-    <Resource Include="Images\Arrows\right-arrow-32.png" />
-    <Resource Include="Images\Arrows\right-arrow-48.png" />
-    <Resource Include="Images\Arrows\right-arrow-64.png" />
-    <Resource Include="Images\Arrows\right-arrows-128.png" />
-    <Resource Include="Images\Arrows\right-arrows-16.png" />
-    <Resource Include="Images\Arrows\right-arrows-256.png" />
-    <Resource Include="Images\Arrows\right-arrows-32.png" />
-    <Resource Include="Images\Arrows\right-arrows-48.png" />
-    <Resource Include="Images\Arrows\right-arrows-64.png" />
-    <Resource Include="Images\Arrows\up-arrow-128.png" />
-    <Resource Include="Images\Arrows\up-arrow-16.png" />
-    <Resource Include="Images\Arrows\up-arrow-256.png" />
-    <Resource Include="Images\Arrows\up-arrow-32.png" />
-    <Resource Include="Images\Arrows\up-arrow-48.png" />
-    <Resource Include="Images\Arrows\up-arrow-64.png" />
-    <Resource Include="Images\Arrows\up-arrows-128.png" />
-    <Resource Include="Images\Arrows\up-arrows-16.png" />
-    <Resource Include="Images\Arrows\up-arrows-256.png" />
-    <Resource Include="Images\Arrows\up-arrows-32.png" />
-    <Resource Include="Images\Arrows\up-arrows-48.png" />
-    <Resource Include="Images\Arrows\up-arrows-64.png" />
+    <EmbeddedResource Include="Images\AppDoc.png" />
+    <EmbeddedResource Include="Images\BlankDoc.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\left-arrow-128.png" />
+    <Resource Include="Images\right-arrow-128.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

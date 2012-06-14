@@ -80,6 +80,8 @@ namespace BiblioRap
 			FileScanner.Abort();
 			fileList = null;
 			filterBox.Text = "";
+			bool recursive = isRecursiveScan.IsChecked ?? false;
+			ScannerSettings SS = new ScannerSettings(recursive, ScanLabel, ScanProgressBar, mediaFileList, Ext);
 			
 			string path = ScanDirectory.Text.Trim();
 			if (path.IsNullOrEmpty())
@@ -88,11 +90,9 @@ namespace BiblioRap
 					+ "But it's ok, you know, because I'll just forgive you and let you try again. Ok ? Now try again.",
 					"Please try again");
 
-			bool recursive = isRecursiveScan.IsChecked ?? false;
-			bool counting = countFiles.IsChecked ?? false;
 			if (path == "*")
 			{
-				FileScanner.GetAllFilesSelectively(recursive, ScanLabel, counting ? ScanProgressBar : null, mediaFileList, allFiles, countedFiles, Ext);
+				FileScanner.GetAllFilesSelectively(SS);
 			}
 			else
 			{
@@ -105,7 +105,7 @@ namespace BiblioRap
 				}
 
 				mediaFileList.Items.Clear();
-				scanPath.GetFilesSelectively(recursive, ScanLabel, counting ? ScanProgressBar : null, mediaFileList, allFiles, countedFiles, Ext);
+				scanPath.GetFilesSelectively(SS);
 			}
         }
 		private void StopScanButton_Click(object sender, RoutedEventArgs e)

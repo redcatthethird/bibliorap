@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Reflection;
 using System.Drawing;
+using System.Windows;
 using System.Windows.Media.Imaging;
 using Microsoft.WindowsAPICodePack.Shell;
 
 namespace BiblioRap
 {
-	public class TFileInfo
+	public class TFileInfo : DependencyObject
 	{
 		public FileInfo f;
 
@@ -40,23 +42,33 @@ namespace BiblioRap
 
 		private BitmapSource _thumbnail;
 		private bool _thIsInit = false;
+
+		public BitmapSource Thumb
+		{
+			get { return (BitmapSource)GetValue(ThumbProperty); }
+			set { SetValue(ThumbProperty, value); }
+		}
+		public static readonly DependencyProperty ThumbProperty =
+			DependencyProperty.Register(
+			"Thumb",
+			typeof(BitmapSource),
+			typeof(TFileInfo),
+			new UIPropertyMetadata((new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("BiblioRap.Images.BlankDoc.png"))).BitmapSource()));
+
 		public BitmapSource Thumbnail
 		{
 			get
 			{
 				if (!_thIsInit)
 				{
-					double screenW = System.Windows.SystemParameters.PrimaryScreenWidth;
-					double screenH = System.Windows.SystemParameters.PrimaryScreenHeight;
+					_thumbnail = Icon.ExtractAssociatedIcon(f.FullName).ToBitmap().ToBitmapSource();
 
+
+					/*
 					if (Misc.Windows7)
 					{
-						//_thumbnail = fileInfo.GetThumbnail().ToBitmapSource();
 						ShellFile sf = ShellFile.FromFilePath(f.FullName);
-						Bitmap b = sf.Thumbnail.SmallBitmap;
-						bool reswidth = b.Width/screenW > b.Height/screenH; // should I resize the width ?
-						//(int)System.Windows.SystemParameters.PrimaryScreenWidth / 10;
-						_thumbnail = sf.Thumbnail.ExtraLargeBitmap.ToBitmapSource();
+						_thumbnail = sf.Thumbnail.ExtraLargeBitmapSource;
 					}
 					else
 					{
@@ -66,7 +78,7 @@ namespace BiblioRap
 						}
 						else
 							_thumbnail = Icon.ExtractAssociatedIcon(f.FullName).ToBitmap().ToBitmapSource();
-					}
+					}*/
 				}
 				return _thumbnail;
 			}
