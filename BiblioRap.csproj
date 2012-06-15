@@ -35,6 +35,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>39113.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -138,6 +141,14 @@
   <ItemGroup>
     <Resource Include="Images\left-arrow-128.png" />
     <Resource Include="Images\right-arrow-128.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\aOptus.png" />
+    <Resource Include="Images\vOptus.png" />
+    <Resource Include="Images\gOptus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="39113.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
