@@ -80,13 +80,13 @@ namespace BiblioRap
 			scanner[lastScanner].Start();
 			lastScanner++;
 		}
-		static void __GetFilesSelectively(this DirectoryInfo path, ScannerSettings SS)
+		public static void __GetFilesSelectively(this DirectoryInfo path, ScannerSettings SS)
 		{
 			SS.displayer.Dispatcher.BeginInvoke(UpdateProgress, SS.progress, true, UpdateProgressType.Progress);
 			path._GetFilesSelectively(SS);
 			SS.displayer.Dispatcher.BeginInvoke(UpdateProgress, SS.progress, false, UpdateProgressType.Progress);
 		}
-		static void _GetFilesSelectively(this DirectoryInfo path, ScannerSettings SS)
+		public static void _GetFilesSelectively(this DirectoryInfo path, ScannerSettings SS)
 		{
 			FileInfo[] allFiles;
 			try

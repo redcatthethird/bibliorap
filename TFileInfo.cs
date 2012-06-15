@@ -7,6 +7,8 @@ using System.Reflection;
 using System.Drawing;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using System.Threading;
+using System.Windows.Threading;
 using Microsoft.WindowsAPICodePack.Shell;
 
 namespace BiblioRap
@@ -14,10 +16,37 @@ namespace BiblioRap
 	public class TFileInfo : DependencyObject
 	{
 		public FileInfo f;
+		static int x = 0;
 
 		public TFileInfo(FileInfo fi)
 		{
 			f = fi;
+
+			//RequestTrueThumb();
+		}
+		public TFileInfo(string s)
+			: this(new FileInfo(s)) { }
+
+		private void RequestTrueThumb()
+		{			
+			Thread thump = new Thread(new ThreadStart(delegate()
+			{
+				if (Misc.Windows7)
+				{
+					ShellFile sf = ShellFile.FromFilePath(f.FullName);
+					Thumbnail = sf.Thumbnail.ExtraLargeBitmapSource;
+				}
+				else
+					if (isPic)
+					{
+						Thumbnail = new Bitmap(Image.FromFile(f.FullName)).ToBitmapSource();
+					}
+					else
+						Thumbnail = Icon.ExtractAssociatedIcon(f.FullName).ToBitmap().ToBitmapSource();
+			}));
+			thump.Name = "Thumb obtainer #" + (x++).ToString();
+			thump.IsBackground = true;
+			thump.Start();
 		}
 
 		public String FullName
@@ -57,7 +86,7 @@ namespace BiblioRap
 
 		public BitmapSource Thumbnail
 		{
-			get
+			get // not used stub
 			{
 				if (!_thIsInit)
 				{
@@ -81,6 +110,11 @@ namespace BiblioRap
 					}*/
 				}
 				return _thumbnail;
+			}
+			set // used thingy
+			{
+				MessageBox.Show(this.Dispatcher.Thread.ManagedThreadId.ToString());
+				this.Dispatcher.BeginInvoke(new Action<BitmapSource, TFileInfo>((b, f) => f.Thumb=b), value, this);
 			}
 		}
 
