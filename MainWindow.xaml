@@ -5,7 +5,7 @@
         xmlns:io="clr-namespace:System.IO;assembly=mscorlib"
         MinHeight="200" MinWidth="500"
         Height="400" Width="600"
-        Name="mainWin" Title="BiblioRap" Icon="/BiblioRap;component/Images/βOptus.png">
+        Name="mainWin" Title="BiblioRap" Icon="/BiblioRap;component/Images/vOptus.png">
     <Window.CommandBindings>
         <CommandBinding Command="Help"
                         CanExecute="HelpCanExecute" Executed="HelpHasExecuted"/>

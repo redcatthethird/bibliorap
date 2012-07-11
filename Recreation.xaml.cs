@@ -10,7 +10,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using System.Diagnostics;
 using D = System.Drawing;
 
 namespace BiblioRap
@@ -120,19 +120,51 @@ namespace BiblioRap
 
 		private void Deleter_Click(object sender, RoutedEventArgs e)
 		{
+			foreach (string a in Directory.GetLogicalDrives())
+				if (Directory.Exists(a + @"Trash\"))
+					Directory.Delete(a + @"Trash\", true);
+		}
+
+		private void Trash(object sender, RoutedEventArgs e)
+		{
+			TFileInfo temp;
 			if (ConflictList.SelectedIndex == -1)
 				return;
-			List<TFileInfo> tf = new List<TFileInfo>();
-			foreach (TFileInfo t in ConflictList.SelectedItems)
+			TFileInfo[] f = new TFileInfo[ConflictList.SelectedItems.Count];
+			ConflictList.SelectedItems.CopyTo(f, 0);
+			foreach (TFileInfo t in f)
 			{
-				(new FileInfo(t.FullName)).Delete();
-				tf.Add(t);
-			}
-			foreach (TFileInfo t in tf)
-			{
+				FileInfo z = new FileInfo(t.FullName);
+				temp = z;
 				ConflictList.Items.Remove(t);
 				refList.Items.Remove(t);
+				string p = z.DirectoryName.Substring(0, 3) + @"Trash\";
+				string m = FindTrashPlace(z);
+				if (!Directory.Exists(p))
+					Directory.CreateDirectory(p);
+				z.MoveTo(p + m);
 			}
+		}
+
+		private void OTrash(object sender, RoutedEventArgs e)
+		{
+			foreach (string a in Directory.GetLogicalDrives())
+				if (Directory.Exists(a + @"Trash\"))
+					Process.Start("explorer.exe", a + @"Trash\");
+		}
+
+		private string FindTrashPlace(FileInfo z)
+		{
+			string s = z.DirectoryName.Substring(0, 3) + @"Trash\" + z.Name;
+			string x = s;
+			string j = Path.GetExtension(s);
+			if (File.Exists(s))
+				for (int k = 1; File.Exists(x); k++)
+				{
+					x = s.Substring(0, s.Length - j.Length) + " (" + k + ")" + j;
+				}
+
+			return x.Substring(9);
 		}
 	}
 
