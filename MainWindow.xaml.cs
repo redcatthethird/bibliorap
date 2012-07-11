@@ -85,10 +85,12 @@ namespace BiblioRap
 			
 			string path = ScanDirectory.Text.Trim();
 			if (path.IsNullOrEmpty())
-				MessageBox.Show("Look, man, uh... Well, honestly, this is embarrassing. Not for me as much as for you. \n"
+				MessageBox.Show("Please type in a directory for scanning",
+					"Please try again");
+				/*MessageBox.Show("Look, man, uh... Well, honestly, this is embarrassing. Not for me as much as for you. \n"
 					+ "Cuz, you know, um, you've just given me an empty string. Or path. Or directory. So, a mistake on your part, I see. \n"
 					+ "But it's ok, you know, because I'll just forgive you and let you try again. Ok ? Now try again.",
-					"Please try again");
+					"Please try again");*/
 
 			if (path == "*")
 			{
