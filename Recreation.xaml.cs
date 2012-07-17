@@ -52,7 +52,7 @@ namespace BiblioRap
 			OriginMode mode = (OriginMode)Enum.Parse(typeof(OriginMode), OriginModer.SelectedItem.ToString());
 			switch (mode)
 			{
-				case OriginMode.Name:
+				case OriginMode.Nume:
 					l = flz.OrderBy(t => t.Name);
 					flz = l.ToArray();
 					for (int i = 0; i < n; i++)
@@ -65,7 +65,7 @@ namespace BiblioRap
 							i += j - 1;
 						}
 					break;
-				case OriginMode.Size:
+				case OriginMode.Marime:
 					l = flz.OrderBy(t => t.f.Length);
 					flz = l.ToArray();
 					for (int i = 0; i < n; i++)
@@ -170,8 +170,8 @@ namespace BiblioRap
 
 	public enum OriginMode
 	{
-		Name,
-		Size,
+		Nume,
+		Marime,
 		MD5
 	}
 }

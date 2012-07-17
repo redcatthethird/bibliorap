@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:BiblioRap"
-        Title="Originat.er" MinWidth="500" MinHeight="100" Height="300" Width="500" Loaded="Window_Loaded" Name="recrOrig" Icon="/BiblioRap;component/Images/aOptus.png">
+        Title="Copii" MinWidth="500" MinHeight="100" Height="300" Width="500" Loaded="Window_Loaded" Name="recrOrig" Icon="/BiblioRap;component/Images/aOptus.png">
     <DockPanel>
         <DockPanel.Resources>
             <Style TargetType="{x:Type Button}">
@@ -13,10 +13,10 @@
         </DockPanel.Resources>
         <ComboBox Name="OriginModer" DockPanel.Dock="Top" />
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
-            <Button Name="Fixer" Click="Fixer_Click">Find copies</Button>
-            <Button Click="Trash">Move to trash</Button>
-            <Button Click="OTrash">Open trash</Button>
-            <Button Name="Deleter"  Click="Deleter_Click">Empty trash</Button>
+            <Button Name="Fixer" Click="Fixer_Click">Gaseste copii</Button>
+            <Button Click="Trash">Arunca la cos</Button>
+            <Button Click="OTrash">Deschide cosul</Button>
+            <Button Name="Deleter"  Click="Deleter_Click">Goleste cosul</Button>
         </StackPanel>
         <ListBox Name="ConflictList" MouseRightButtonUp="ConflictList_MouseRightButtonUp" SelectionMode="Extended">
             <ListBox.Resources>

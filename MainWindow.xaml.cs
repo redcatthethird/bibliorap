@@ -199,7 +199,7 @@ namespace BiblioRap
 				}
 			}
 
-			// Clear the displayed filelist and add only the files that contain the filter.
+			// Clear the displayed file list and add only the files that contain the filter.
 			mediaFileList.Items.Clear();
 			string filter = caseSensitive ? filterBox.Text.Trim() : filterBox.Text.ToLower();
 			string name;
@@ -252,6 +252,12 @@ namespace BiblioRap
 		{
 			FileScanner.Abort();
 			(new Recreation(mediaFileList)).ShowDialog();
+		}
+
+		private void ScanDirectory_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.Key == Key.Return)
+				StartScanButton_Click(sender, e);
 		}
 
 	}
