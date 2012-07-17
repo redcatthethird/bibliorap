@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -9,9 +10,10 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using System.Diagnostics;
 using System.IO;
 using Microsoft.WindowsAPICodePack.Shell;
+using D = System.Drawing;
 
 namespace BiblioRap
 {
@@ -45,13 +47,10 @@ namespace BiblioRap
 
 		private void Displayer_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
 		{
-			//MessageBox.Show("Width = " + Displayer.Source.Width + "| Height = " + Displayer.Source.Height);
-			//MessageBox.Show(Lefter.ActualWidth + " | " + Lefter.ActualHeight + "\n"
-			//     + Righter.ActualWidth + " | " + Righter.ActualHeight + "\n"
-			//     + this.Width + " | " + this.Height + "\n"
-			//     + (this.Width - Lefter.ActualWidth - Righter.ActualWidth) + " | "
-			//     + (this.Height - DisplayModer.ActualHeight) + "\n"
-			//     + Displayer.ActualWidth + " | " + Displayer.ActualHeight);
+			if (e.ClickCount != 2)
+				return;
+
+			Process.Start((refList.Items[index] as TFileInfo).FullName);
 		}
 
 		private void Lefter_Click(object sender, RoutedEventArgs e)
@@ -75,7 +74,7 @@ namespace BiblioRap
 			FileInfo fileInfo = refList.Items[index] as TFileInfo;
 			if (fileInfo == null)
 				throw new ArgumentNullException(
-					"Something got screwed up, the thing selected in the ItemsControl ain't a FileInfo.");
+					"Something got screwed up, the thing selected in the ItemsControl isn't a FileInfo.");
 
 			Displayer.Source = Thumbnail(fileInfo, thumbSize);
 
@@ -103,6 +102,13 @@ namespace BiblioRap
 		{
 			thumbSize = (ThumbnailSize)Enum.Parse(typeof(ThumbnailSize), e.AddedItems[0] as string);
 			Refresh();
+		}
+
+		private void Displayer_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			FileInfo[] s = new FileInfo[1] { refList.Items[index] as TFileInfo };
+			System.Windows.Point p = e.GetPosition(this);
+			(new ContextMenu()).ShowContextMenu(s, new D.Point((int)p.X, (int)p.Y));
 		}
 	}
 

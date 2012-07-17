@@ -51,9 +51,7 @@
                 <ProgressBar IsIndeterminate="False" Name="ScanProgressBar" Width="100" Height="16"/>
             </StatusBarItem>
             <StatusBarItem>
-                <TextBlock Name="ScanLabel" VerticalAlignment="Center" TextTrimming="CharacterEllipsis">
-                    Here the scanning status shall be displayed.
-                </TextBlock>
+                <TextBlock Name="ScanLabel" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
             </StatusBarItem>
         </StatusBar>
         <Grid>
@@ -83,9 +81,9 @@
             </Grid.Background>
             
             <DockPanel Grid.Row="0">
-                <Label DockPanel.Dock="Left" VerticalAlignment="Center">Folder to scan:</Label>
+                <Label DockPanel.Dock="Left" VerticalAlignment="Center">Folder scanat:</Label>
                 <Button DockPanel.Dock="Right" Name="BrowseButton" Click="BrowseButton_Click">Browse</Button>
-                <TextBox Name="ScanDirectory" Text="C:\Users\Red Cat\Desktop\New folder" />
+                <TextBox KeyDown="ScanDirectory_KeyDown" Name="ScanDirectory" Text="C:\Users\Red Cat\Desktop\New folder" />
             </DockPanel>
             
             <DockPanel Grid.Row="1">
@@ -100,13 +98,13 @@
                     </Style>
                 </DockPanel.Resources>
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-                    <TextBlock>Filter:</TextBlock>
+                    <TextBlock>Cautare:</TextBlock>
                     <TextBox Width="100px" Name="filterBox" TextChanged="filterBox_TextChanged"/>
                     <CheckBox Name="searchCaseSensitive" Checked="searchCaseSensitive_Checked" Unchecked="searchCaseSensitive_Unchecked">Case-sensitive</CheckBox>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Height="20">
-                <CheckBox Name="isRecursiveScan" IsChecked="True">Scan recursively</CheckBox>
-                <CheckBox Name="showFullPath" IsChecked="{Binding ElementName=mainWin, Path=ShowFullPaths, Mode=TwoWay}">Show full paths</CheckBox>
+                <CheckBox Name="isRecursiveScan" IsChecked="True">Scanare recursiva</CheckBox>
+                <CheckBox Name="showFullPath" IsChecked="{Binding ElementName=mainWin, Path=ShowFullPaths, Mode=TwoWay}">Aratati adresele intregi</CheckBox>
                 </StackPanel>
             </DockPanel>
             
@@ -148,26 +146,26 @@
                         <Setter Property="Margin" Value="2,5,2,5"/>
                     </Style>
                 </DockPanel.Resources>
-                <Button DockPanel.Dock="Right" x:Name="SaveButton"
+                <Button Visibility="Collapsed" DockPanel.Dock="Right" x:Name="SaveButton"
                         Click="SaveButton_Click">
                         Save filenames
                 </Button>
                 <StackPanel Orientation="Horizontal">
                     <Button Name="StartScanButton"
                             Click="StartScanButton_Click">
-                        Start Scan
+                        Scanare
                     </Button>
                     <Button Name="StopScanButton"
                             Click="StopScanButton_Click">
-                        Stop Scan
+                        Oprire
                     </Button>
                     <Button Name="Thumbnailer" Click="Thumbnailer_Click">
-                        Thumbnail.er
-                        <Button.ToolTip>Displays the currently selected thumbnail in another window.</Button.ToolTip>
+                        Preview
+                        <Button.ToolTip>Deschide o reprezentare a fisierului selectat intr-o fereastra de dialog.</Button.ToolTip>
                     </Button>
                     <Button Name="Originater" Click="Originater_Click">
-                        Originat.er
-                        <Button.ToolTip>Attempts to reduce the number of identical unessential media files to 1.</Button.ToolTip>
+                        Duplicate
+                        <Button.ToolTip>Deschide o fereastra in care se pot gasi si sterge fisierele duplicate.</Button.ToolTip>
                     </Button>
                 </StackPanel>
             </DockPanel>
