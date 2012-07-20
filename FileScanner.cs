@@ -30,10 +30,8 @@ namespace BiblioRap
 
 	public static class FileScanner
 	{
-		static List<Thread> scanner = null;
-		static List<Thread> intermediate = null;
-		static int lastScanner = 0;
-		static int lastIntermediate = 0;
+		static Thread scan = null;
+		static Thread inter = null;
 
 		public static void GetAllFilesSelectively(ScannerSettings SS)
 		{
@@ -45,40 +43,33 @@ namespace BiblioRap
 				drives[i] = new DirectoryInfo(driveStrings[i]);
 			}
 
-			Init(ref intermediate);
-			intermediate.Add(new Thread(new ThreadStart(() =>
+			inter = new Thread(() =>
 			{
 				foreach (DirectoryInfo drive in drives)
 				{
-					Init(ref scanner);
-					scanner.Add(new Thread(new ThreadStart(delegate()
+					scan = new Thread(new ThreadStart(delegate()
 					{
 						drive._GetFilesSelectively(SS);
-					})));
-					scanner[lastScanner].Name = "File scanning thread #" + lastScanner;
-					scanner[lastScanner].IsBackground = true;
-					scanner[lastScanner].Start();
-					scanner[lastScanner].Join();
-					lastScanner++;
+					}));
+					scan.Name = "File scanning thread";
+					scan.IsBackground = true;
+					scan.Start();
+					scan.Join();
 				}
-			})));
-			intermediate[lastIntermediate].Name = "Intermediate thread-starting thread #" + lastIntermediate;
-			intermediate[lastIntermediate].IsBackground = true;
-			intermediate[lastIntermediate].Start();
-			lastIntermediate++;
+			});
+			inter.Name = "Intermediate thread-starting thread";
+			inter.IsBackground = true;
+			inter.Start();
 		}
 		public static void GetFilesSelectively(this DirectoryInfo path, ScannerSettings SS)
 		{
-
-			Init(ref scanner);
-			scanner.Add(new Thread(new ThreadStart(delegate()
+			scan = new Thread(() =>
 			{
 				path.__GetFilesSelectively(SS);
-			})));
-			scanner[lastScanner].Name = "File scanning thread #" + lastScanner;
-			scanner[lastScanner].IsBackground = true;
-			scanner[lastScanner].Start();
-			lastScanner++;
+			});
+			scan.Name = "File scanning thread";
+			scan.IsBackground = true;
+			scan.Start();
 		}
 		public static void __GetFilesSelectively(this DirectoryInfo path, ScannerSettings SS)
 		{
@@ -105,7 +96,7 @@ namespace BiblioRap
 				// If the file's type is among the wanted ones :
 				if (SS.ext.Contains(file.Extension.Replace(".", "").ToLowerInvariant()))
 				{
-					SS.items.Dispatcher.BeginInvoke(UpdateProgress, SS.items, file, UpdateProgressType.ListBoxItems);
+					SS.items.Dispatcher.BeginInvoke(UpdateProgress, SS.items, file.FullName, UpdateProgressType.ListBoxItems);
 					Thread.Sleep(6);
 				}
 			}
@@ -141,12 +132,7 @@ namespace BiblioRap
 						((TextBlock)progressDisplayer).Text = (string)value;
 						break;
 					case UpdateProgressType.ListBoxItems:
-						/*if (value is IEnumerable<object>)
-							((ListBox)progressDisplayer).Items.Add((IEnumerable<object>)value);
-						else*/
-							((ListBox)progressDisplayer).Items.Add(new TFileInfo(value as FileInfo));
-						break;
-					default:
+							((ListBox)progressDisplayer).Items.Add(new TFileInfo(value as string));
 						break;
 				}
 			}
@@ -184,23 +170,14 @@ namespace BiblioRap
 
 		public static void Abort()
 		{
-			if (scanner != null)
-				foreach (Thread scan in scanner)
-					if (scan != null && scan.IsAlive && scan.ThreadState != ThreadState.AbortRequested)
-						scan.Abort();
-			scanner = null;
-			lastScanner = 0;
-			if (intermediate != null)
-				foreach (Thread inter in intermediate)
-					if (inter != null && inter.IsAlive && inter.ThreadState != ThreadState.AbortRequested)
-						inter.Abort();
-			intermediate = null;
-			lastIntermediate = 0;
-		}
-
-		private static void Init(ref List<Thread> threads)
-		{
-			threads = threads ?? new List<Thread>();
+			if (scan != null)
+				if (scan != null && scan.IsAlive && scan.ThreadState != ThreadState.AbortRequested)
+					scan.Abort();
+			scan = null;
+			if (inter != null)
+				if (inter != null && inter.IsAlive && inter.ThreadState != ThreadState.AbortRequested)
+					inter.Abort();
+			inter = null;
 		}
 	}
 }

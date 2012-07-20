@@ -116,10 +116,10 @@
                 </ListBox.ItemsPanel>
                 <ListBox.Resources>
                     <DataTemplate DataType="{x:Type local:TFileInfo}">
-                        <DockPanel Width="128" Margin="5">
+                        <DockPanel Width="128" Margin="5" ToolTip="{Binding FullName}">
                             <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding Name}" Name="file"
                                        DockPanel.Dock="Bottom" HorizontalAlignment="Center" Width="128"/>
-                            <Image Source="{Binding Thumb}" Width="128"
+                            <Image Source="{Binding Thumb}" Width="128" MaxHeight="256"
                                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </DockPanel>
                         <DataTemplate.Triggers>
@@ -166,6 +166,10 @@
                     <Button Name="Originater" Click="Originater_Click">
                         Duplicate
                         <Button.ToolTip>Deschide o fereastra in care se pot gasi si sterge fisierele duplicate.</Button.ToolTip>
+                    </Button>
+                    <Button Name="Th" Click="Th_Click">
+                        Miniaturi
+                        <Button.ToolTip>Va afisa miniaturi pentru toate fisierele scanate.</Button.ToolTip>
                     </Button>
                 </StackPanel>
             </DockPanel>
