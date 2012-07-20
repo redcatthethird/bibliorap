@@ -7,8 +7,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Win32;
+using System.Threading;
+using System.Windows.Media.Imaging;
 using WF = System.Windows.Forms;
 using D = System.Drawing;
+using T = System.Windows.Threading;
+using Microsoft.WindowsAPICodePack.Shell;
 
 namespace BiblioRap
 {
@@ -17,6 +21,8 @@ namespace BiblioRap
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		public static T.Dispatcher d;
+
 		List<FileInfo> fileList = null;
 		public static string[] VidExt = "avi,mp4,mkv,wmv".Split(',');
 		public static string[] SndExt = "mp3,mp2,amr".Split(',');
@@ -40,6 +46,7 @@ namespace BiblioRap
 		public MainWindow()
 		{
 			InitializeComponent();
+			d = T.Dispatcher.CurrentDispatcher;
 		}
 
 		private void HelpCanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -87,13 +94,10 @@ namespace BiblioRap
 			if (path.IsNullOrEmpty())
 				MessageBox.Show("Please type in a directory for scanning",
 					"Please try again");
-				/*MessageBox.Show("Look, man, uh... Well, honestly, this is embarrassing. Not for me as much as for you. \n"
-					+ "Cuz, you know, um, you've just given me an empty string. Or path. Or directory. So, a mistake on your part, I see. \n"
-					+ "But it's ok, you know, because I'll just forgive you and let you try again. Ok ? Now try again.",
-					"Please try again");*/
 
 			if (path == "*")
 			{
+				mediaFileList.Items.Clear();
 				FileScanner.GetAllFilesSelectively(SS);
 			}
 			else
@@ -114,7 +118,7 @@ namespace BiblioRap
 		{
 			FileScanner.Abort();
 		}
-		private void SaveButton_Click(object sender, RoutedEventArgs e)
+		internal void SaveButton_Click(object sender, RoutedEventArgs e)
 		{
 			SaveFileDialog sfDlg = new SaveFileDialog();
 			sfDlg.AddExtension = true;
@@ -147,13 +151,12 @@ namespace BiblioRap
 				}
 			}
 		}
-		private void BrowseButton_Click(object sender, RoutedEventArgs e)
+		protected void BrowseButton_Click(object sender, RoutedEventArgs e)
 		{
 			WF.FolderBrowserDialog fbDlg = new WF.FolderBrowserDialog();
 			if (fbDlg.ShowDialog() == WF.DialogResult.OK)
 				ScanDirectory.Text = fbDlg.SelectedPath;
 		}
-
 		private void FileDoubleClick(object sender, MouseButtonEventArgs e)
 		{
 			if (e.ChangedButton != MouseButton.Left)
@@ -260,5 +263,10 @@ namespace BiblioRap
 				StartScanButton_Click(sender, e);
 		}
 
+		private void Th_Click(object sender, RoutedEventArgs e)
+		{
+			FileScanner.Abort();
+			PicGetter.GetPix(mediaFileList);
+		}
 	}
 }

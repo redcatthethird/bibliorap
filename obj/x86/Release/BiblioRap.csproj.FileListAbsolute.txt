@@ -23,8 +23,6 @@ C:\Users\luciano\Desktop\bibliorap\bin\Release\Microsoft.WindowsAPICodePack.Sens
 C:\Users\luciano\Desktop\bibliorap\bin\Release\Microsoft.WindowsAPICodePack.ShellExtensions.pdb
 C:\Users\luciano\Desktop\bibliorap\obj\x86\Release\ThumbnailViewer.baml
 C:\Users\luciano\Desktop\bibliorap\obj\x86\Release\ThumbnailViewer.g.cs
-C:\Users\Red Cat\Desktop\bibliorap\bin\Release\BiblioRap.exe
-C:\Users\Red Cat\Desktop\bibliorap\bin\Release\BiblioRap.pdb
 C:\Users\Red Cat\Desktop\bibliorap\obj\x86\Release\ResolveAssemblyReference.cache
 C:\Users\Red Cat\Desktop\bibliorap\obj\x86\Release\AboutDialog.baml
 C:\Users\Red Cat\Desktop\bibliorap\obj\x86\Release\ThumbnailViewer.baml
@@ -36,6 +34,8 @@ C:\Users\Red Cat\Desktop\bibliorap\obj\x86\Release\App.g.cs
 C:\Users\Red Cat\Desktop\bibliorap\obj\x86\Release\GeneratedInternalTypeHelper.g.cs
 C:\Users\Red Cat\Desktop\bibliorap\obj\x86\Release\BiblioRap_MarkupCompile.cache
 C:\Users\Red Cat\Desktop\bibliorap\obj\x86\Release\BiblioRap_MarkupCompile.lref
+C:\Users\Red Cat\Desktop\bibliorap\bin\Release\BiblioRap.exe
+C:\Users\Red Cat\Desktop\bibliorap\bin\Release\BiblioRap.pdb
 C:\Users\Red Cat\Desktop\bibliorap\obj\x86\Release\MainWindow.baml
 C:\Users\Red Cat\Desktop\bibliorap\obj\x86\Release\Recreation.baml
 C:\Users\Red Cat\Desktop\bibliorap\obj\x86\Release\BiblioRap.g.resources
