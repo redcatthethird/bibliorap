@@ -172,6 +172,7 @@ namespace BiblioRap
 
 		public static void Abort()
 		{
+			MainWindow.mnWn.ScanProgressBar.IsIndeterminate = false;
 			if (scan != null)
 				if (scan != null && scan.IsAlive && scan.ThreadState != ThreadState.AbortRequested)
 					scan.Abort();

@@ -109,13 +109,13 @@ namespace BiblioRap
 			}
 			else
 			{
-				DirectoryInfo scanPath = new DirectoryInfo(path);
-				if (!scanPath.Exists)
+				if (!Directory.Exists(path))
 				{
 					MessageBox.Show(this, "Folderul nu exista! Verificati daca este scris corect.",
 						"Folder lipsa!", MessageBoxButton.OK, MessageBoxImage.Exclamation, MessageBoxResult.OK);
 					return;
 				}
+				DirectoryInfo scanPath = new DirectoryInfo(path);
 
 				mediaFileList.Items.Clear();
 				scanPath.GetFilesSelectively(SS);
@@ -311,8 +311,24 @@ namespace BiblioRap
 			foreach (object o in z)
 				{
 					t = o as TFileInfo;
-					if (t.libs == LibState.Addable)
+					if (t.libs != LibState.Added)
 					{
+						if (t.libs == LibState.Unaddable)
+						{
+							MessageBoxResult r = MessageBox.Show("Ati selectat pentru reorganizare un fisier"
+														+ " important pentru programele sau sistemul de operare al dumneavoastra."
+														+ " Doriti sa continuati ?", "Warning", MessageBoxButton.YesNoCancel,
+														MessageBoxImage.Warning, MessageBoxResult.Cancel);
+							switch (r)
+							{
+								case MessageBoxResult.No:
+									continue;
+								case MessageBoxResult.Cancel:
+									return;
+								default:
+									break;
+							}
+						}
 						mediaFileList.Items.Remove(o);
 						switch (t.ext)
 						{
