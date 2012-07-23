@@ -180,7 +180,7 @@ namespace BiblioRap
 					}
 
 					// if file pertains to the windows drive and isn't in the users folder
-					if (FullName.Contains(winDrive) && !FullName.Contains(@"\Users\"))
+					if (FullName.Contains(winDrive) && !FullName.Contains(@"\Users\") && !FullName.Contains(@"\Documents and Settings\"))
 					{
 						// it can't be added
 						return LibState.Unaddable;

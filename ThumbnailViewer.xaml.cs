@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Diagnostics;
-using System.IO;
 using Microsoft.WindowsAPICodePack.Shell;
 using D = System.Drawing;
 
@@ -75,7 +69,7 @@ namespace BiblioRap
 			if (index > refList.Items.Count - 1) index = 0;
 			if (index < 0) index = refList.Items.Count - 1;
 
-			FileInfo fileInfo = refList.Items[index] as TFileInfo;
+			TFileInfo fileInfo = refList.Items[index] as TFileInfo;
 			if (fileInfo == null)
 				throw new ArgumentNullException("Something got screwed up, the thing selected in the ItemsControl isn't a FileInfo.");
 
@@ -84,21 +78,40 @@ namespace BiblioRap
 			this.Title = fileInfo.Name;
 		}
 
-		BitmapSource Thumbnail(FileInfo fi, ThumbnailSize ts)
+		BitmapSource Thumbnail(TFileInfo fi, ThumbnailSize ts)
 		{
-			switch (ts)
+			if (Misc.Windows7)
+				switch (ts)
+				{
+					case ThumbnailSize.ExtraLarge:
+						return ShellFile.FromFilePath(fi.FullName).Thumbnail.ExtraLargeBitmapSource;
+					case ThumbnailSize.Large:
+						return ShellFile.FromFilePath(fi.FullName).Thumbnail.LargeBitmapSource;
+					case ThumbnailSize.Medium:
+						return ShellFile.FromFilePath(fi.FullName).Thumbnail.MediumBitmapSource;
+					case ThumbnailSize.Small:
+						return ShellFile.FromFilePath(fi.FullName).Thumbnail.SmallBitmapSource;
+					default:
+						return ShellFile.FromFilePath(fi.FullName).Thumbnail.LargeBitmapSource;
+				}
+			else if (fi.ext == Ext.Pic)
 			{
-				case ThumbnailSize.ExtraLarge:
-					return ShellFile.FromFilePath(fi.FullName).Thumbnail.ExtraLargeBitmapSource;
-				case ThumbnailSize.Large:
-					return ShellFile.FromFilePath(fi.FullName).Thumbnail.LargeBitmapSource;
-				case ThumbnailSize.Medium:
-					return ShellFile.FromFilePath(fi.FullName).Thumbnail.MediumBitmapSource;
-				case ThumbnailSize.Small:
-					return ShellFile.FromFilePath(fi.FullName).Thumbnail.SmallBitmapSource;
-				default:
-					return ShellFile.FromFilePath(fi.FullName).Thumbnail.LargeBitmapSource;
+				int w, h;
+				D.Image i = D.Image.FromFile(fi.FullName);
+				if (i.Width > i.Height)
+				{
+					w = 256;
+					h = w * i.Height / i.Width;
+				}
+				else
+				{
+					h = 256;
+					w = h * i.Width / i.Height;
+				}
+				return new Bitmap(i.GetThumbnailImage(w, h, null, IntPtr.Zero)).ToBitmapSource();
 			}
+			else
+				return D.Icon.ExtractAssociatedIcon(fi.FullName).ToBitmap().ToBitmapSource();
 		}
 
 		private void DisplayModer_SelectionChanged(object sender, SelectionChangedEventArgs e)
