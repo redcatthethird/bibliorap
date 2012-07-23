@@ -39,7 +39,7 @@ namespace BiblioRap
 				ShellFile sf = ShellFile.FromFilePath(f.FullName);
 				bs = sf.Thumbnail.ExtraLargeBitmapSource;
 			}
-			else if (f.isPic())
+			else if (f.ext == Ext.Pic)
 				bs = new Bitmap(Image.FromFile(f.FullName)).ToBitmapSource();
 			else
 				bs = Icon.ExtractAssociatedIcon(f.FullName).ToBitmap().ToBitmapSource();
@@ -47,14 +47,61 @@ namespace BiblioRap
 		}
 	}
 
+	public enum LibState
+	{
+		Addable,
+		Unaddable,
+		Added
+	}
+
 	public class TFileInfo : DependencyObject
 	{
 		public FileInfo f;
 
+		public static string winDrive = "";
+		static TFileInfo()
+		{
+			try
+			{
+				winDrive = Environment.GetFolderPath(Environment.SpecialFolder.System).Substring(0, 3);
+			}
+			catch (Exception)
+			{
+				foreach (string drive in Directory.GetLogicalDrives())
+				{
+					if (Directory.Exists(drive + "WINDOWS\\System32") || Directory.Exists(drive + "WINDOWS NT\\System32"))
+					{
+						winDrive = drive;
+						break;
+					}
+				}
+			}
+			finally
+			{
+			}
+			if (winDrive == "")
+			{
+				// couldn't find default directory, should probably do some error checking
+				winDrive = "C:\\";
+			}
+		}
 		public TFileInfo(FileInfo fi)
 		{
 			f = fi;
 			PicGetter.cq.Enqueue(this);
+
+
+			switch (libs)
+			{
+				case LibState.Unaddable:
+					LibStatus = (new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("BiblioRap.Images.Danger.png"))).BitmapSource();
+					break;
+				case LibState.Added:
+					LibStatus = (new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("BiblioRap.Images.Ok.png"))).BitmapSource();
+					break;
+				default:
+					break;
+			}
 		}
 		public TFileInfo(string s)
 			: this(new FileInfo(s)) { }
@@ -68,16 +115,82 @@ namespace BiblioRap
 			get { return f.Name; }
 		}
 
-		public bool isPic()
+		public Ext ext
 		{
-			foreach (string str in MainWindow.PicExt)
-				if (f.FullName.EndsWith(str))
-					return true;
-			return false;
+			get
+			{
+				string s = f.FullName;
+				foreach (string str in MainWindow.VidExt)
+					if (s.EndsWith(str))
+						return Ext.Vid;
+				foreach (string str in MainWindow.SndExt)
+					if (s.EndsWith(str))
+						return Ext.Snd;
+				foreach (string str in MainWindow.PicExt)
+					if (s.EndsWith(str))
+						return Ext.Pic;
+				foreach (string str in MainWindow.DocExt)
+					if (s.EndsWith(str))
+						return Ext.Doc;
+				return Ext.Rnd;
+			}
 		}
+		public LibState libs
+		{
+			get
+			{
+				// check if the file is in it's correct media folder
+				// if so, it means it was already added
+				switch (ext)
+				{
+					case Ext.Vid:
+						if (FullName.Contains(MainWindow.mediaDir + @"\Video"))
+							return LibState.Added;
+						break;
+					case Ext.Snd:
+						if (FullName.Contains(MainWindow.mediaDir + @"\Audio"))
+							return LibState.Added;
+						break;
+					case Ext.Pic:
+						if (FullName.Contains(MainWindow.mediaDir + @"\Photo"))
+							return LibState.Added;
+						break;
+					case Ext.Doc:
+						if (FullName.Contains(MainWindow.mediaDir + @"\Written"))
+							return LibState.Added;
+						break;
+					default:
+						break;
+				}
 
-		private BitmapSource _thumbnail;
-		private bool _thIsInit = false;
+				// if file pertains to the windows drive
+				if (FullName.Contains(winDrive))
+				{
+					// if file is in the users folder
+					if (FullName.Contains(@"\Users\"))
+						// it can be added
+						return LibState.Addable;
+					// else it can't
+					return LibState.Unaddable;
+				}
+
+				// otherwise, if it belongs to a program
+				if (FullName.Contains(@"\Program Files\"))
+					// it can't be added
+					return LibState.Unaddable;
+
+				return LibState.Addable;
+			}
+		}
+		
+		public BitmapSource LibStatus
+		{
+			get { return (BitmapSource)GetValue(LibStatusProperty); }
+			set { SetValue(LibStatusProperty, value); }
+		}
+		public static readonly DependencyProperty LibStatusProperty =
+			DependencyProperty.Register("LibStatus", typeof(BitmapSource), typeof(TFileInfo),
+			new UIPropertyMetadata((new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("BiblioRap.Images.Play.png"))).BitmapSource()));
 
 		public BitmapSource Thumb
 		{
@@ -85,10 +198,7 @@ namespace BiblioRap
 			set { SetValue(ThumbProperty, value); }
 		}
 		public static readonly DependencyProperty ThumbProperty =
-			DependencyProperty.Register(
-			"Thumb",
-			typeof(BitmapSource),
-			typeof(TFileInfo),
+			DependencyProperty.Register( "Thumb", typeof(BitmapSource), typeof(TFileInfo),
 			new UIPropertyMetadata((new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("BiblioRap.Images.BlankDoc.png"))).BitmapSource()));
 
 		public static implicit operator FileInfo(TFileInfo fi)

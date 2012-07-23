@@ -41,22 +41,6 @@ namespace BiblioRap
 			return str == null || str.Length == 0;
 		}
 
-		/// <summary>
-		/// Returns the Windows-displayed thumbnail of a file described by a FileInfo.
-		/// Using the shell. Windows dll. Supposedly working, but not really.
-		/// </summary>
-		/// <param name="fi">FileInfo specifying the file.</param>
-		/// <returns>Thumbnail of the file.</returns>
-		public static Bitmap GetThumbnail(this FileInfo fi)
-		{
-			Bitmap thumb;
-			using (ShellThumbnail st = new ShellThumbnail())
-			{
-				thumb = st.GetThumbnail(fi.FullName);
-			}
-			return thumb;
-		}
-
 		[DllImport("gdi32", CharSet = CharSet.Auto)]
 		internal extern static int DeleteObject(IntPtr hObject);
 
@@ -120,54 +104,6 @@ namespace BiblioRap
 		public static BitmapSource BitmapSource(this Bitmap bmp)
 		{
 			return bmp.ToBitmapSource();
-		}
-
-		/*public static Bitmap GetResized(this Bitmap bmp, int width, int height)
-		{
-			MemoryStream ms = new MemoryStream();
-			bmp.Save(ms, ImageFormat.Png);
-			BitmapImage bi = new BitmapImage();
-			bi.BeginInit();
-			if (width > 0)
-				bi.DecodePixelWidth = width;
-			if (height > 0)
-				bi.DecodePixelHeight = height;
-			bi.StreamSource = ms;
-			bi.EndInit();
-
-
-			MemoryStream mse = new MemoryStream();
-			//BmpBitmapEncoder e = new BmpBitmapDecoder();
-		}*/
-	}
-
-	public static class VisualTraverser
-	{
-		public static Child GetFirstChild<Child>(DependencyObject list)
-			where Child : DependencyObject
-		{
-			DependencyObject candidate = null;
-			for (int i = 0; i < VisualTreeHelper.GetChildrenCount(list); i++)
-			{
-				candidate = VisualTreeHelper.GetChild(list, i);
-				if (candidate is Child)
-					break;
-			}
-			if (!(candidate is Child))
-				for (int i = 0; i < VisualTreeHelper.GetChildrenCount(list); i++)
-				{
-					candidate = VisualTreeHelper.GetChild(list, i);
-					candidate = GetFirstChild<Child>(candidate);
-					if (candidate is Child)
-						break;
-				}
-			return candidate as Child;
-		}
-
-		// Important: Here I assume the ListBoxItem contains a single TextBlock.
-		public static string GetItemString(ListBoxItem item)
-		{
-			return GetFirstChild<TextBlock>(item).Text;
 		}
 	}
 }
