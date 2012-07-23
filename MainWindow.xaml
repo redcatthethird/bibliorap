@@ -5,7 +5,7 @@
         xmlns:io="clr-namespace:System.IO;assembly=mscorlib"
         MinHeight="200" MinWidth="500"
         Height="400" Width="600"
-        Name="mainWin" Title="BiblioRap" Icon="/BiblioRap;component/Images/vOptus.png">
+        Name="mainWin" Title="BiblioRap" Icon="/BiblioRap;component/Images/vOptus.png" Loaded="mainWin_Loaded">
     <Window.CommandBindings>
         <CommandBinding Command="Help"
                         CanExecute="HelpCanExecute" Executed="HelpHasExecuted"/>
@@ -38,12 +38,12 @@
         		    <GradientStop Color="White" Offset="0.348"/>
         	    </LinearGradientBrush>
             </Menu.Background>
-            <MenuItem Header="_File">
-                <MenuItem Header="_Exit" Command="Close"/>
+            <MenuItem Header="_Fisier">
+                <MenuItem Header="_Iesire" Command="Close"/>
             </MenuItem>
-            <MenuItem Header="_Help">
+            <MenuItem Header="_Ajutor">
                 <MenuItem Command="Help" Header="{Binding Path=Command.Text, RelativeSource={RelativeSource Self}}"/>
-                <MenuItem Header="_About" Click="ShowAboutDialog"/>
+                <MenuItem Header="_Despre" Click="ShowAboutDialog"/>
             </MenuItem>
         </Menu>
         <StatusBar DockPanel.Dock="Bottom">
@@ -116,22 +116,22 @@
                 </ListBox.ItemsPanel>
                 <ListBox.Resources>
                     <DataTemplate DataType="{x:Type local:TFileInfo}">
-                        <DockPanel Width="128" Margin="5" ToolTip="{Binding FullName}">
-                            <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding Name}" Name="file"
-                                       DockPanel.Dock="Bottom" HorizontalAlignment="Center" Width="128"/>
+                        <StackPanel Width="128" Margin="5" ToolTip="{Binding FullName}" Orientation="Vertical">
                             <Image Source="{Binding Thumb}" Width="128" MaxHeight="256"
                                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </DockPanel>
+                            <StackPanel Width="128" Height="16" Background="DeepSkyBlue" Name="libcol">
+                                <Image Source="{Binding LibStatus}"  Width="128" Height="16"/>
+                            </StackPanel>
+                            <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding Name}" Name="file"
+                                       HorizontalAlignment="Center" Width="128"/>
+                        </StackPanel>
                         <DataTemplate.Triggers>
-                            <DataTrigger Binding="{Binding ElementName=mainWin, Path=ShowFullPaths}" Value="True">
-                                <Setter TargetName="file" Property="Text" Value="{Binding FullName}"/>
+                            <DataTrigger Binding="{Binding libs}" Value="{x:Static local:LibState.Unaddable}">
+                                <Setter TargetName="libcol" Property="Background" Value="#C7322E"/>
                             </DataTrigger>
-                        </DataTemplate.Triggers>
-                    </DataTemplate>
-                    
-                    <DataTemplate DataType="{x:Type io:FileInfo}">
-                        <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding Name}" Name="file" HorizontalAlignment="Center"/>
-                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding libs}" Value="{x:Static local:LibState.Added}">
+                                <Setter TargetName="libcol" Property="Background" Value="#5DC254"/>
+                            </DataTrigger>
                             <DataTrigger Binding="{Binding ElementName=mainWin, Path=ShowFullPaths}" Value="True">
                                 <Setter TargetName="file" Property="Text" Value="{Binding FullName}"/>
                             </DataTrigger>
@@ -170,6 +170,10 @@
                     <Button Name="Th" Click="Th_Click">
                         Miniaturi
                         <Button.ToolTip>Va afisa miniaturi pentru toate fisierele scanate.</Button.ToolTip>
+                    </Button>
+                    <Button Name="Stack" Click="Stack_Click">
+                        Organizeaza
+                        <Button.ToolTip>Va trimite fisierele selectate in locul potrivit din folderul media selectat pentru organizare.</Button.ToolTip>
                     </Button>
                 </StackPanel>
             </DockPanel>

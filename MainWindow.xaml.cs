@@ -16,19 +16,29 @@ using Microsoft.WindowsAPICodePack.Shell;
 
 namespace BiblioRap
 {
+	public enum Ext
+	{
+		Vid,
+		Snd,
+		Pic,
+		Doc,
+		Rnd
+	}
+
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		public static T.Dispatcher d;
-
 		List<FileInfo> fileList = null;
+
+		public static string mediaDir;
+		
 		public static string[] VidExt = "avi,mp4,mkv,wmv".Split(',');
 		public static string[] SndExt = "mp3,mp2,amr".Split(',');
 		public static string[] PicExt = "jpg,jpeg,png,gif,bmp,tiff".Split(',');
 		public static string[] DocExt = "txt,doc,docx,pdf,nfo,epub,mobi".Split(',');
-		public static string[] Ext
+		public static string[] Exten
 		{
 			// VidExt + SndExt + PicExt + DocExt
 			get { return VidExt.Concat(SndExt).Concat(PicExt).Concat(DocExt).ToArray<string>(); }
@@ -42,11 +52,10 @@ namespace BiblioRap
 		// Using a DependencyProperty as the backing store for ShowFullPaths.  This enables animation, styling, binding, etc...
 		public static readonly DependencyProperty ShowFullPathsProperty =
 			DependencyProperty.Register("ShowFullPaths", typeof(bool?), typeof(MainWindow), new UIPropertyMetadata(false));
-				
+		
 		public MainWindow()
 		{
 			InitializeComponent();
-			d = T.Dispatcher.CurrentDispatcher;
 		}
 
 		private void HelpCanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -88,7 +97,7 @@ namespace BiblioRap
 			fileList = null;
 			filterBox.Text = "";
 			bool recursive = isRecursiveScan.IsChecked ?? false;
-			ScannerSettings SS = new ScannerSettings(recursive, ScanLabel, ScanProgressBar, mediaFileList, Ext);
+			ScannerSettings SS = new ScannerSettings(recursive, ScanLabel, ScanProgressBar, mediaFileList, Exten);
 			
 			string path = ScanDirectory.Text.Trim();
 			if (path.IsNullOrEmpty())
@@ -267,6 +276,67 @@ namespace BiblioRap
 		{
 			FileScanner.Abort();
 			PicGetter.GetPix(mediaFileList);
+		}
+
+		private void mainWin_Loaded(object sender, RoutedEventArgs e)
+		{
+			var x = new WF.FolderBrowserDialog();
+			x.ShowNewFolderButton = true;
+			x.RootFolder = Environment.SpecialFolder.Desktop;
+			x.Description = "Alegeti un folder ca sa serveasca drept baza pentru organizarea fisierelor media.";
+			WF.DialogResult d = x.ShowDialog();
+			if (d != WF.DialogResult.OK && d != WF.DialogResult.Yes)
+				this.Close();
+			mediaDir = x.SelectedPath;
+
+			DirectoryInfo t = new DirectoryInfo(mediaDir + @"\Video");
+			if (!t.Exists)
+				t.Create();
+			t = new DirectoryInfo(mediaDir + @"\Audio");
+			if (!t.Exists)
+				t.Create();
+			t = new DirectoryInfo(mediaDir + @"\Photo");
+			if (!t.Exists)
+				t.Create();
+			t = new DirectoryInfo(mediaDir + @"\Written");
+			if (!t.Exists)
+				t.Create();
+		}
+
+		private void Stack_Click(object sender, RoutedEventArgs e)
+		{
+			TFileInfo t;
+			if (mediaFileList.SelectedItems.Count < 1)
+				return;
+
+			TFileInfo[] z = new TFileInfo[mediaFileList.SelectedItems.Count];
+			mediaFileList.SelectedItems.CopyTo(z, 0);
+
+			foreach (object o in z)
+				{
+					t = o as TFileInfo;
+					if (t.libs == LibState.Addable)
+					{
+						mediaFileList.Items.Remove(o);
+						switch (t.ext)
+						{
+							case Ext.Vid:
+								t.f.MoveTo(MainWindow.mediaDir + @"\Video\" + t.Name);
+								break;
+							case Ext.Snd:
+								t.f.MoveTo(MainWindow.mediaDir + @"\Audio\" + t.Name);
+								break;
+							case Ext.Pic:
+								t.f.MoveTo(MainWindow.mediaDir + @"\Photo\" + t.Name);
+								break;
+							case Ext.Doc:
+								t.f.MoveTo(MainWindow.mediaDir + @"\Written\" + t.Name);
+								break;
+							default:
+								break;
+						}
+					}					
+				}
 		}
 	}
 }
