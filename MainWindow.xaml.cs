@@ -31,11 +31,11 @@ namespace BiblioRap
 	public partial class MainWindow : Window
 	{
 		List<FileInfo> fileList = null;
-
 		public static string mediaDir;
+		public static MainWindow mnWn;
 		
 		public static string[] VidExt = "avi,mp4,mkv,wmv".Split(',');
-		public static string[] SndExt = "mp3,mp2,amr".Split(',');
+		public static string[] SndExt = "mp3,mp2,amr,wav,wma,flac".Split(',');
 		public static string[] PicExt = "jpg,jpeg,png,gif,bmp,tiff".Split(',');
 		public static string[] DocExt = "txt,doc,docx,pdf,nfo,epub,mobi".Split(',');
 		public static string[] Exten
@@ -49,10 +49,9 @@ namespace BiblioRap
 			get { return (bool?)GetValue(ShowFullPathsProperty); }
 			set { SetValue(ShowFullPathsProperty, value); }
 		}
-		// Using a DependencyProperty as the backing store for ShowFullPaths.  This enables animation, styling, binding, etc...
 		public static readonly DependencyProperty ShowFullPathsProperty =
 			DependencyProperty.Register("ShowFullPaths", typeof(bool?), typeof(MainWindow), new UIPropertyMetadata(false));
-		
+
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -101,8 +100,7 @@ namespace BiblioRap
 			
 			string path = ScanDirectory.Text.Trim();
 			if (path.IsNullOrEmpty())
-				MessageBox.Show("Please type in a directory for scanning",
-					"Please try again");
+				MessageBox.Show("Selectati un folder pentru scanere", "Incercati din nou");
 
 			if (path == "*")
 			{
@@ -114,8 +112,8 @@ namespace BiblioRap
 				DirectoryInfo scanPath = new DirectoryInfo(path);
 				if (!scanPath.Exists)
 				{
-					MessageBox.Show(this, "The directory doesn't exist ! Please check if it is typed correctly.",
-						"Directory missing !", MessageBoxButton.OK, MessageBoxImage.Exclamation, MessageBoxResult.OK);
+					MessageBox.Show(this, "Folderul nu exista! Verificati daca este scris corect.",
+						"Folder lipsa!", MessageBoxButton.OK, MessageBoxImage.Exclamation, MessageBoxResult.OK);
 					return;
 				}
 
@@ -127,7 +125,7 @@ namespace BiblioRap
 		{
 			FileScanner.Abort();
 		}
-		internal void SaveButton_Click(object sender, RoutedEventArgs e)
+		private void SaveButton_Click(object sender, RoutedEventArgs e)
 		{
 			SaveFileDialog sfDlg = new SaveFileDialog();
 			sfDlg.AddExtension = true;
@@ -160,9 +158,10 @@ namespace BiblioRap
 				}
 			}
 		}
-		protected void BrowseButton_Click(object sender, RoutedEventArgs e)
+		private void BrowseButton_Click(object sender, RoutedEventArgs e)
 		{
 			WF.FolderBrowserDialog fbDlg = new WF.FolderBrowserDialog();
+			fbDlg.Description = "Alegeti un folder pentru a fi scanat.";
 			if (fbDlg.ShowDialog() == WF.DialogResult.OK)
 				ScanDirectory.Text = fbDlg.SelectedPath;
 		}
@@ -171,14 +170,7 @@ namespace BiblioRap
 			if (e.ChangedButton != MouseButton.Left)
 				return;
 			object file = (e.Source as ListBox).SelectedItem;
-			if (file is FileInfo)
-			{
-				Process.Start((file as FileInfo).FullName);
-			}
-			if (file is TFileInfo)
-			{
-				Process.Start((file as TFileInfo).FullName);
-			}
+			Process.Start((file as TFileInfo).FullName);
 		}
 		private void FileRightClick(object sender, MouseButtonEventArgs e)
 		{
@@ -280,6 +272,8 @@ namespace BiblioRap
 
 		private void mainWin_Loaded(object sender, RoutedEventArgs e)
 		{
+			mnWn = mainWin;
+
 			var x = new WF.FolderBrowserDialog();
 			x.ShowNewFolderButton = true;
 			x.RootFolder = Environment.SpecialFolder.Desktop;
@@ -305,6 +299,8 @@ namespace BiblioRap
 
 		private void Stack_Click(object sender, RoutedEventArgs e)
 		{
+			FileScanner.Abort();
+
 			TFileInfo t;
 			if (mediaFileList.SelectedItems.Count < 1)
 				return;

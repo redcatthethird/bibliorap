@@ -93,12 +93,14 @@ namespace BiblioRap
 
 			foreach (FileInfo file in allFiles)
 			{
-				// If the file's type is among the wanted ones :
-				if (SS.ext.Contains(file.Extension.Replace(".", "").ToLowerInvariant()))
-				{
-					SS.items.Dispatcher.BeginInvoke(UpdateProgress, SS.items, file.FullName, UpdateProgressType.ListBoxItems);
-					Thread.Sleep(6);
-				}
+				try {
+					// If the file's type is among the wanted ones :
+					if (SS.ext.Contains(file.Extension.Replace(".", "").ToLowerInvariant()) && file.FullName.Length < 260 && file.DirectoryName.Length < 248)
+					{
+						SS.items.Dispatcher.BeginInvoke(UpdateProgress, SS.items, file.FullName, UpdateProgressType.ListBoxItems);
+						Thread.Sleep(6);
+					}
+				} catch (Exception) { }
 			}
 
 			if (SS.recur)
