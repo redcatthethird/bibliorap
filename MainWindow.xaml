@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:BiblioRap"
         xmlns:io="clr-namespace:System.IO;assembly=mscorlib"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         MinHeight="200" MinWidth="500"
         Height="400" Width="600"
         Name="mainWin" Title="BiblioRap" Icon="/BiblioRap;component/Images/vOptus.png" Loaded="mainWin_Loaded">
@@ -13,6 +14,7 @@
                         CanExecute="CloseCanExecute" Executed="CloseHasExecuted"/>
     </Window.CommandBindings>
     <Window.Resources>
+        <local:MultiplyConverter x:Key="mulcon"/>
         <Style TargetType="{x:Type Button}">
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
@@ -83,7 +85,7 @@
             <DockPanel Grid.Row="0">
                 <Label DockPanel.Dock="Left" VerticalAlignment="Center">Folder scanat:</Label>
                 <Button DockPanel.Dock="Right" Name="BrowseButton" Click="BrowseButton_Click">Browse</Button>
-                <TextBox KeyDown="ScanDirectory_KeyDown" Name="ScanDirectory" Text="C:\Users\Red Cat\Desktop\New folder" />
+                <TextBox KeyDown="ScanDirectory_KeyDown" Name="ScanDirectory"/>
             </DockPanel>
             
             <DockPanel Grid.Row="1">
@@ -116,15 +118,23 @@
                 </ListBox.ItemsPanel>
                 <ListBox.Resources>
                     <DataTemplate DataType="{x:Type local:TFileInfo}">
-                        <StackPanel Width="128" Margin="5" ToolTip="{Binding FullName}" Orientation="Vertical">
-                            <Image Source="{Binding Thumb}" Width="128" MaxHeight="256"
+                        <StackPanel Width="{Binding ElementName=sli, Path=Value, Converter={StaticResource mulcon}, ConverterParameter=128}"
+                                    Margin="5" ToolTip="{Binding FullName}" Orientation="Vertical">
+                            <StackPanel.Effect>
+                                <DropShadowEffect Color="Black" Direction="-50" ShadowDepth="2"/>
+                            </StackPanel.Effect>
+                            <Image Source="{Binding Thumb}"
+                                   Width="{Binding ElementName=sli, Path=Value, Converter={StaticResource mulcon}, ConverterParameter=128}"
+                                   MaxHeight="{Binding ElementName=sli, Path=Value, Converter={StaticResource mulcon}, ConverterParameter=128}"
                                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            <StackPanel Width="128" Height="16" Background="DeepSkyBlue" Name="libcol">
-                                <Image Source="{Binding LibStatus}"  Width="128" Height="16"/>
+                            <StackPanel Height="16" Background="DeepSkyBlue" Name="libcol"
+                                        Width="{Binding ElementName=sli, Path=Value, Converter={StaticResource mulcon}, ConverterParameter=128}">
+                                <Image Source="{Binding LibStatus}" Height="16"
+                                       Width="{Binding ElementName=sli, Path=Value, Converter={StaticResource mulcon}, ConverterParameter=128}"/>
+                                </StackPanel>
+                                <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding Name}" Name="file"
+                                           HorizontalAlignment="Center" Width="128"/>
                             </StackPanel>
-                            <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding Name}" Name="file"
-                                       HorizontalAlignment="Center" Width="128"/>
-                        </StackPanel>
                         <DataTemplate.Triggers>
                             <DataTrigger Binding="{Binding libs}" Value="{x:Static local:LibState.Unaddable}">
                                 <Setter TargetName="libcol" Property="Background" Value="#C7322E"/>
@@ -150,29 +160,26 @@
                         Click="SaveButton_Click">
                         Save filenames
                 </Button>
+                <TextBlock DockPanel.Dock="Right" Text="{Binding ElementName=sli, Path=Value}"
+                           Margin="2,5,2,5" Width="20"/>
+                <Slider Minimum="0.3" Maximum="2.0" TickFrequency="0.1"
+                        IsMoveToPointEnabled="True" IsSnapToTickEnabled="True"
+                        Name="sli" Value="1"
+                        DockPanel.Dock="Right" Width="128" Margin="2,5,2,5">
+                </Slider>
                 <StackPanel Orientation="Horizontal">
-                    <Button Name="StartScanButton"
-                            Click="StartScanButton_Click">
-                        Scanare
-                    </Button>
-                    <Button Name="StopScanButton"
-                            Click="StopScanButton_Click">
-                        Oprire
-                    </Button>
-                    <Button Name="Thumbnailer" Click="Thumbnailer_Click">
-                        Preview
+                    <Button Name="StartScanButton" Click="StartScanButton_Click">Scanare</Button>
+                    <Button Name="StopScanButton" Click="StopScanButton_Click">Oprire</Button>
+                    <Button Name="Thumbnailer" Click="Thumbnailer_Click">Preview
                         <Button.ToolTip>Deschide o reprezentare a fisierului selectat intr-o fereastra de dialog.</Button.ToolTip>
                     </Button>
-                    <Button Name="Originater" Click="Originater_Click">
-                        Duplicate
+                    <Button Name="Originater" Click="Originater_Click">Duplicate
                         <Button.ToolTip>Deschide o fereastra in care se pot gasi si sterge fisierele duplicate.</Button.ToolTip>
                     </Button>
-                    <Button Name="Th" Click="Th_Click">
-                        Miniaturi
+                    <Button Name="Th" Click="Th_Click">Miniaturi
                         <Button.ToolTip>Va afisa miniaturi pentru toate fisierele scanate.</Button.ToolTip>
                     </Button>
-                    <Button Name="Stack" Click="Stack_Click">
-                        Organizeaza
+                    <Button Name="Stack" Click="Stack_Click">Organizeaza
                         <Button.ToolTip>Va trimite fisierele selectate in locul potrivit din folderul media selectat pentru organizare.</Button.ToolTip>
                     </Button>
                 </StackPanel>

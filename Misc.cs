@@ -1,21 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows;
-using System.Text;
-using System.Windows.Threading;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Interop;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.Security.Cryptography;
 using System.IO;
 using System.Runtime.InteropServices;
-using RMA.Shell;
+using System.Security.Cryptography;
+using System.Text;
+using System.Globalization;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Interop;
+using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 namespace BiblioRap
 {
+	public class MultiplyConverter:IValueConverter
+	{
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			double v = Double.Parse(parameter.ToString());
+			double m = Double.Parse(value.ToString());
+			double s = v * m;
+
+			return s;
+		}
+
+		public object ConvertBack(object value, Type targetTypes, object parameter, CultureInfo culture)
+		{
+			throw new NotSupportedException("ConvertBack should never be called");
+		}
+	}
+
 	public static class Misc
 	{
 		public static bool Windows7;

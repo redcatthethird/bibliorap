@@ -47,10 +47,14 @@ namespace BiblioRap
 
 		private void Displayer_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
 		{
-			if (e.ClickCount != 2)
-				return;
-
-			Process.Start((refList.Items[index] as TFileInfo).FullName);
+			switch (e.ClickCount)
+			{
+				case 2:
+					Process.Start((refList.Items[index] as TFileInfo).FullName);
+					break;
+				default:
+					break;
+			}
 		}
 
 		private void Lefter_Click(object sender, RoutedEventArgs e)
@@ -73,8 +77,7 @@ namespace BiblioRap
 
 			FileInfo fileInfo = refList.Items[index] as TFileInfo;
 			if (fileInfo == null)
-				throw new ArgumentNullException(
-					"Something got screwed up, the thing selected in the ItemsControl isn't a FileInfo.");
+				throw new ArgumentNullException("Something got screwed up, the thing selected in the ItemsControl isn't a FileInfo.");
 
 			Displayer.Source = Thumbnail(fileInfo, thumbSize);
 
